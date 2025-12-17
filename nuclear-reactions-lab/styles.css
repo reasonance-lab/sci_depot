@@ -1,0 +1,787 @@
+/* Nuclear Reactions Lab - Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-dark: #0a0e1a;
+    --bg-darker: #060810;
+    --bg-card: #111827;
+    --bg-card-hover: #1a2235;
+    --accent-cyan: #22d3ee;
+    --accent-blue: #3b82f6;
+    --accent-purple: #8b5cf6;
+    --accent-pink: #ec4899;
+    --accent-red: #ef4444;
+    --accent-green: #10b981;
+    --accent-yellow: #f59e0b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --border-color: #1e293b;
+    --proton-color: #dc2626;
+    --neutron-color: #3b82f6;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 280px;
+    background: var(--bg-darker);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.title-section h1 {
+    font-size: 18px;
+    color: var(--accent-cyan);
+    font-weight: 600;
+}
+
+.subtitle {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.reset-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 10px;
+    transition: all 0.2s;
+}
+
+.reset-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.reset-icon {
+    font-size: 16px;
+}
+
+/* Stats Row */
+.stats-row {
+    display: flex;
+    gap: 10px;
+}
+
+.stat-box {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    display: block;
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+
+/* Progress Section */
+.progress-section {
+    background: transparent;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.progress-bar {
+    height: 6px;
+    background: var(--bg-card);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* Learning Levels */
+.learning-levels h3 {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.level-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.level-btn {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+}
+
+.level-btn:hover:not(.locked) {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-cyan);
+}
+
+.level-btn.active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.level-btn.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.level-icon {
+    font-size: 16px;
+}
+
+.level-btn span:last-child {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.level-btn.active span:last-child {
+    color: var(--text-primary);
+}
+
+/* Comparison Table */
+.comparison-table {
+    background: var(--bg-card);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.comparison-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.comparison-table th {
+    background: var(--bg-darker);
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.comparison-table td:first-child {
+    color: var(--text-secondary);
+}
+
+.comparison-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Try It Section */
+.try-it-section {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.try-it-section h3 {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.reaction-select {
+    width: 100%;
+    background: var(--bg-darker);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.trigger-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+}
+
+.fission-btn {
+    background: linear-gradient(135deg, var(--accent-red), var(--accent-pink));
+    color: white;
+}
+
+.fission-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.fusion-btn {
+    background: var(--bg-darker);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.fusion-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+/* Quiz Section */
+.quiz-section {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.quiz-section h3 {
+    font-size: 14px;
+    color: var(--accent-yellow);
+    margin-bottom: 12px;
+}
+
+.quiz-question {
+    font-size: 13px;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.quiz-option {
+    background: var(--bg-darker);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.quiz-option:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-cyan);
+}
+
+.quiz-option.correct {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+
+.quiz-option.incorrect {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+.quiz-feedback {
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: none;
+}
+
+.quiz-feedback.show {
+    display: block;
+}
+
+.quiz-feedback.correct {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--accent-green);
+}
+
+.quiz-feedback.incorrect {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--accent-red);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: linear-gradient(180deg, var(--bg-dark) 0%, #0f172a 100%);
+}
+
+/* Nucleus Info Panel */
+.nucleus-info-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+}
+
+.current-nucleus {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px 24px;
+}
+
+.current-nucleus .label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.nucleus-symbol {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    margin: 4px 0;
+}
+
+.nucleus-details {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.particle-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.proton-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--proton-color);
+    border-radius: 50%;
+}
+
+.neutron-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--neutron-color);
+    border-radius: 50%;
+}
+
+/* Reaction Equation */
+.reaction-equation {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--accent-cyan);
+    border-radius: 8px;
+    padding: 12px 20px;
+    z-index: 10;
+}
+
+.equation-label {
+    color: var(--accent-yellow);
+    font-size: 12px;
+}
+
+.equation-text {
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+/* Visualization Container */
+.visualization-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#nucleusCanvas {
+    width: 100%;
+    height: 100%;
+}
+
+.animation-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.energy-burst {
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 200, 100, 0.4) 40%, transparent 70%);
+    opacity: 0;
+    transition: all 0.1s;
+}
+
+.energy-burst.active {
+    animation: burst 0.8s ease-out forwards;
+}
+
+@keyframes burst {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+    100% {
+        width: 600px;
+        height: 600px;
+        opacity: 0;
+    }
+}
+
+/* Reaction Type Buttons */
+.reaction-type-buttons {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 10;
+}
+
+.reaction-type-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.reaction-type-btn:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-cyan);
+}
+
+.reaction-type-btn.active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: white;
+}
+
+.type-icon {
+    font-size: 14px;
+}
+
+.alpha-icon {
+    color: var(--accent-cyan);
+}
+
+.beta-icon {
+    color: var(--accent-yellow);
+}
+
+.gamma-icon {
+    color: var(--accent-purple);
+}
+
+/* Fission Products Modal */
+.fission-products-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.fission-products-modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.products-container {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+}
+
+.product {
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.5s ease-out;
+}
+
+.product.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.product canvas {
+    width: 200px;
+    height: 200px;
+}
+
+.product-label {
+    margin-top: 16px;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+}
+
+.neutrons-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease-out 0.3s;
+}
+
+.neutrons-display.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.neutron-particle {
+    width: 30px;
+    height: 30px;
+    background: var(--neutron-color);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    animation: neutronPulse 1s ease-in-out infinite;
+}
+
+.neutron-particle:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.neutron-particle:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes neutronPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.8);
+    }
+}
+
+.neutrons-label {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+}
+
+/* Grid background effect */
+.main-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+}
+
+/* Fission animation states */
+.nucleus-splitting {
+    animation: split 1s ease-in-out forwards;
+}
+
+@keyframes split {
+    0% {
+        transform: scale(1);
+    }
+    30% {
+        transform: scale(1.2);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* Product flying animation */
+.product-1.flying {
+    animation: flyLeft 1s ease-out forwards;
+}
+
+.product-2.flying {
+    animation: flyRight 1s ease-out forwards;
+}
+
+@keyframes flyLeft {
+    0% {
+        transform: translateX(0) scale(0.3);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(-100px) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes flyRight {
+    0% {
+        transform: translateX(0) scale(0.3);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(100px) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Energy release particles */
+.energy-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.energy-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--accent-yellow);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-yellow);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 260px;
+    }
+}
+
+@media (max-width: 900px) {
+    .app-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        max-height: 50vh;
+    }
+
+    .reaction-type-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

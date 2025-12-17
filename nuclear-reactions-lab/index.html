@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuclear Reactions Lab - Texas TEKS Chemistry</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <header class="sidebar-header">
+                <div class="title-section">
+                    <h1>Nuclear Reactions Lab</h1>
+                    <p class="subtitle">Texas TEKS Chemistry - Interactive Learning</p>
+                </div>
+                <button class="reset-btn" id="resetBtn">
+                    <span class="reset-icon">⟳</span>
+                    <span>Reset</span>
+                </button>
+            </header>
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <span class="stat-value" id="xpPoints">405</span>
+                    <span class="stat-label">XP POINTS</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value" id="badges">3/5</span>
+                    <span class="stat-label">BADGES</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value" id="safety">100%</span>
+                    <span class="stat-label">SAFETY</span>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>Overall Progress</span>
+                    <span id="progressPercent">63%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 63%"></div>
+                </div>
+            </div>
+
+            <!-- Learning Levels -->
+            <div class="learning-levels">
+                <h3>LEARNING LEVELS</h3>
+                <div class="level-buttons">
+                    <button class="level-btn" data-level="1">
+                        <span class="level-icon">🧪</span>
+                        <span>L1</span>
+                    </button>
+                    <button class="level-btn" data-level="2">
+                        <span class="level-icon">⚙️</span>
+                        <span>L2</span>
+                    </button>
+                    <button class="level-btn" data-level="3">
+                        <span class="level-icon">⚛️</span>
+                        <span>L3</span>
+                    </button>
+                    <button class="level-btn active" data-level="4">
+                        <span class="level-icon">⚡</span>
+                        <span>L4</span>
+                    </button>
+                    <button class="level-btn locked" data-level="5">
+                        <span class="level-icon">🔒</span>
+                        <span>L5</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Fission</th>
+                            <th>Fusion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Energy/nucleon</td>
+                            <td>Lower</td>
+                            <td>Higher</td>
+                        </tr>
+                        <tr>
+                            <td>Current use</td>
+                            <td>Power plants</td>
+                            <td>Experimental</td>
+                        </tr>
+                        <tr>
+                            <td>In nature</td>
+                            <td>Rare</td>
+                            <td>Stars</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Try It Section -->
+            <div class="try-it-section">
+                <h3>🔬 Try It: Trigger Reactions</h3>
+                <select id="reactionSelect" class="reaction-select">
+                    <option value="u235-fission">Uranium-235 (Fission)</option>
+                    <option value="pu239-fission">Plutonium-239 (Fission)</option>
+                    <option value="h-fusion">Hydrogen (Fusion)</option>
+                </select>
+                <button class="trigger-btn fission-btn" id="triggerFission">
+                    <span class="btn-icon">💥</span>
+                    Trigger Fission
+                </button>
+                <button class="trigger-btn fusion-btn" id="triggerFusion">
+                    <span class="btn-icon">🔗</span>
+                    Trigger Fusion
+                </button>
+            </div>
+
+            <!-- Quiz Section -->
+            <div class="quiz-section">
+                <h3>📋 Checkpoint Quiz</h3>
+                <p class="quiz-question">Which process powers the Sun?</p>
+                <div class="quiz-options">
+                    <button class="quiz-option" data-answer="fission">Nuclear fission</button>
+                    <button class="quiz-option" data-answer="fusion">Nuclear fusion</button>
+                    <button class="quiz-option" data-answer="both">Both equally</button>
+                </div>
+                <div class="quiz-feedback" id="quizFeedback"></div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Nucleus Info Panel -->
+            <div class="nucleus-info-panel">
+                <div class="current-nucleus">
+                    <span class="label">CURRENT NUCLEUS</span>
+                    <h2 class="nucleus-symbol" id="nucleusSymbol">U-235</h2>
+                    <p class="nucleus-details" id="nucleusDetails">Uranium · Z=92 · N=143 · A=235</p>
+                    <div class="particle-legend">
+                        <span class="legend-item"><span class="proton-dot"></span> Proton</span>
+                        <span class="legend-item"><span class="neutron-dot"></span> Neutron</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reaction Equation -->
+            <div class="reaction-equation" id="reactionEquation">
+                <span class="equation-label">⚡ Fission:</span>
+                <span class="equation-text">U-235 → Ba-141 + Kr-92 + 3n</span>
+            </div>
+
+            <!-- 3D Visualization -->
+            <div class="visualization-container" id="visualizationContainer">
+                <canvas id="nucleusCanvas"></canvas>
+                <div class="animation-overlay" id="animationOverlay">
+                    <div class="energy-burst" id="energyBurst"></div>
+                </div>
+            </div>
+
+            <!-- Reaction Type Buttons -->
+            <div class="reaction-type-buttons">
+                <button class="reaction-type-btn" data-type="alpha">
+                    <span class="type-icon alpha-icon">●</span>
+                    Alpha (α)
+                </button>
+                <button class="reaction-type-btn" data-type="beta">
+                    <span class="type-icon beta-icon">⚡</span>
+                    Beta (β⁻)
+                </button>
+                <button class="reaction-type-btn" data-type="gamma">
+                    <span class="type-icon gamma-icon">✦</span>
+                    Gamma (γ)
+                </button>
+                <button class="reaction-type-btn active" data-type="fission">
+                    <span class="type-icon fission-icon">💥</span>
+                    Fission
+                </button>
+                <button class="reaction-type-btn" data-type="fusion">
+                    <span class="type-icon fusion-icon">🔗</span>
+                    Fusion
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Fission Products Display -->
+    <div class="fission-products-modal" id="fissionProductsModal">
+        <div class="products-container">
+            <div class="product product-1" id="product1">
+                <canvas id="product1Canvas"></canvas>
+                <div class="product-label">Ba-141</div>
+            </div>
+            <div class="product product-2" id="product2">
+                <canvas id="product2Canvas"></canvas>
+                <div class="product-label">Kr-92</div>
+            </div>
+            <div class="neutrons-display" id="neutronsDisplay">
+                <div class="neutron-particle"></div>
+                <div class="neutron-particle"></div>
+                <div class="neutron-particle"></div>
+                <span class="neutrons-label">3 Neutrons</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="nuclear-lab.js"></script>
+</body>
+</html>
