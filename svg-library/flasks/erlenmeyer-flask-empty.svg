@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140" width="100" height="140">
+  <defs>
+    <linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.9"/>
+      <stop offset="30%" style="stop-color:#ffffff;stop-opacity:0.3"/>
+      <stop offset="70%" style="stop-color:#d4e8f0;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#b8d4e0;stop-opacity:0.8"/>
+    </linearGradient>
+    <linearGradient id="neckGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#d4e8f0;stop-opacity:0.8"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#b8d4e0;stop-opacity:0.8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Flask body -->
+  <path d="M35 10 L35 45 L10 120 Q8 130 20 132 L80 132 Q92 130 90 120 L65 45 L65 10"
+        fill="url(#glassGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Flask neck rim -->
+  <ellipse cx="50" cy="10" rx="15" ry="4" fill="url(#neckGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Inner rim highlight -->
+  <ellipse cx="50" cy="10" rx="12" ry="3" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.6"/>
+
+  <!-- Glass reflection -->
+  <path d="M20 80 Q15 100 22 125" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+  <path d="M38 50 L38 42" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+</svg>

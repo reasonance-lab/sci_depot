@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.9"/>
+      <stop offset="20%" style="stop-color:#ffffff;stop-opacity:0.3"/>
+      <stop offset="80%" style="stop-color:#d4e8f0;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#b8d4e0;stop-opacity:0.8"/>
+    </linearGradient>
+    <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7ec8e3;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#a8dff0;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#5eb5d6;stop-opacity:0.9"/>
+    </linearGradient>
+    <linearGradient id="pourGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#a8dff0;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#7ec8e3;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#a8dff0;stop-opacity:0.9"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="rotate(-45, 60, 60)">
+    <!-- Beaker body (tilted) -->
+    <path d="M35 20 L35 85 Q35 90 40 90 L80 90 Q85 90 85 85 L85 20"
+          fill="url(#glassGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+    <!-- Liquid (partial, tilted) -->
+    <path d="M36 55 L84 35 L84 85 Q84 89 80 89 L40 89 Q36 89 36 85 Z"
+          fill="url(#liquidGradient)"/>
+
+    <!-- Spout -->
+    <path d="M35 20 Q30 20 28 24 L28 32 Q30 30 35 30"
+          fill="url(#glassGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+    <!-- Top rim -->
+    <line x1="35" y1="20" x2="85" y2="20" stroke="#6ba3be" stroke-width="1.5"/>
+
+    <!-- Measurement marks -->
+    <line x1="77" y1="35" x2="83" y2="35" stroke="#6ba3be" stroke-width="0.8" opacity="0.4"/>
+    <line x1="77" y1="55" x2="83" y2="55" stroke="#6ba3be" stroke-width="0.8" opacity="0.4"/>
+    <line x1="77" y1="75" x2="83" y2="75" stroke="#6ba3be" stroke-width="0.8" opacity="0.4"/>
+  </g>
+
+  <!-- Pouring stream -->
+  <path d="M18 28 Q15 45 12 70 Q10 85 15 105"
+        fill="none" stroke="url(#pourGradient)" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
+  <path d="M18 28 Q16 40 14 60"
+        fill="none" stroke="#c8eef8" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+</svg>

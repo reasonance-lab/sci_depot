@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 80" width="30" height="80">
+  <defs>
+    <linearGradient id="rubberBulb" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a2a2a"/>
+      <stop offset="30%" style="stop-color:#1a1a1a"/>
+      <stop offset="100%" style="stop-color:#0a0a0a"/>
+    </linearGradient>
+    <linearGradient id="glassDropper" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#d4e8f0;stop-opacity:0.9"/>
+    </linearGradient>
+    <linearGradient id="indicatorLiquid" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8040a0;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#a060c0;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#8040a0;stop-opacity:0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rubber bulb -->
+  <ellipse cx="15" cy="10" rx="10" ry="10" fill="url(#rubberBulb)" stroke="#000" stroke-width="0.5"/>
+
+  <!-- Bulb highlight -->
+  <ellipse cx="12" cy="7" rx="3" ry="4" fill="#3a3a3a" opacity="0.5"/>
+
+  <!-- Glass dropper tube -->
+  <rect x="12" y="18" width="6" height="35" fill="url(#glassDropper)" stroke="#6ba3be" stroke-width="0.5"/>
+
+  <!-- Indicator liquid inside -->
+  <rect x="13" y="25" width="4" height="26" fill="url(#indicatorLiquid)"/>
+
+  <!-- Tapered tip -->
+  <path d="M12 53 L15 73 L18 53" fill="url(#glassDropper)" stroke="#6ba3be" stroke-width="0.5"/>
+
+  <!-- Liquid in tip -->
+  <path d="M13 53 L15 68 L17 53" fill="url(#indicatorLiquid)" opacity="0.9"/>
+
+  <!-- Drop forming -->
+  <ellipse cx="15" cy="75" rx="2" ry="3" fill="#9050b0" opacity="0.9"/>
+
+  <!-- Glass reflection -->
+  <line x1="13" y1="20" x2="13" y2="50" stroke="#ffffff" stroke-width="0.5" opacity="0.5"/>
+</svg>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" width="100" height="200">
+  <defs>
+    <linearGradient id="funnelGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#d4e8f0;stop-opacity:0.9"/>
+      <stop offset="30%" style="stop-color:#ffffff;stop-opacity:0.4"/>
+      <stop offset="70%" style="stop-color:#d4e8f0;stop-opacity:0.7"/>
+      <stop offset="100%" style="stop-color:#b8d4e0;stop-opacity:0.9"/>
+    </linearGradient>
+    <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7ec8e3;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#a8dff0;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#5eb5d6;stop-opacity:0.9"/>
+    </linearGradient>
+    <linearGradient id="rubberGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a4a4a"/>
+      <stop offset="50%" style="stop-color:#3a3a3a"/>
+      <stop offset="100%" style="stop-color:#2a2a2a"/>
+    </linearGradient>
+    <linearGradient id="flaskGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.9"/>
+      <stop offset="30%" style="stop-color:#ffffff;stop-opacity:0.3"/>
+      <stop offset="70%" style="stop-color:#d4e8f0;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#b8d4e0;stop-opacity:0.8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Funnel (Buchner style) -->
+  <path d="M20 5 L80 5 L70 40 L30 40 Z"
+        fill="url(#funnelGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Funnel rim -->
+  <ellipse cx="50" cy="5" rx="30" ry="6" fill="url(#funnelGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Liquid in funnel -->
+  <ellipse cx="50" cy="15" rx="26" ry="5" fill="url(#liquidGradient)"/>
+
+  <!-- Filter membrane -->
+  <ellipse cx="50" cy="38" rx="18" ry="3" fill="#ffffff" stroke="#e0e0e0" stroke-width="0.5"/>
+
+  <!-- Funnel stem -->
+  <rect x="45" y="40" width="10" height="20" fill="url(#funnelGradient)" stroke="#6ba3be" stroke-width="1"/>
+
+  <!-- Rubber stopper/adapter -->
+  <path d="M40 58 L60 58 L58 75 L42 75 Z"
+        fill="url(#rubberGradient)" stroke="#1a1a1a" stroke-width="0.5"/>
+
+  <!-- Stopper hole -->
+  <rect x="46" y="58" width="8" height="5" fill="#2a2a2a"/>
+
+  <!-- Filtering flask -->
+  <path d="M30 75 L30 100 L15 175 Q12 190 25 192 L75 192 Q88 190 85 175 L70 100 L70 75"
+        fill="url(#flaskGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Side arm -->
+  <path d="M72 90 L88 80 L95 80" fill="none" stroke="#6ba3be" stroke-width="3"/>
+  <path d="M72 90 L88 80 L95 80" fill="url(#funnelGradient)" stroke="#6ba3be" stroke-width="1"/>
+  <ellipse cx="95" cy="80" rx="3" ry="4" fill="url(#funnelGradient)" stroke="#6ba3be" stroke-width="1"/>
+
+  <!-- Collected filtrate -->
+  <path d="M25 160 L75 160 L85 175 Q88 190 75 192 L25 192 Q12 190 15 175 Z"
+        fill="url(#liquidGradient)" opacity="0.8"/>
+
+  <!-- Dripping liquid -->
+  <ellipse cx="50" cy="85" rx="2" ry="3" fill="#7ec8e3" opacity="0.9"/>
+  <ellipse cx="50" cy="95" rx="1.5" ry="2" fill="#7ec8e3" opacity="0.8"/>
+  <ellipse cx="50" cy="103" rx="1" ry="1.5" fill="#7ec8e3" opacity="0.7"/>
+
+  <!-- Glass reflections -->
+  <path d="M22 90 L18 170" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/>
+  <path d="M25 10 L35 10" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+</svg>

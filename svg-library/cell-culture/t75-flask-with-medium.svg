@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 80" width="140" height="80">
+  <defs>
+    <linearGradient id="plasticGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f8f8;stop-opacity:0.95"/>
+      <stop offset="50%" style="stop-color:#e8e8e8;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#d8d8d8;stop-opacity:0.95"/>
+    </linearGradient>
+    <linearGradient id="capGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90c8"/>
+      <stop offset="50%" style="stop-color:#3a7ab8"/>
+      <stop offset="100%" style="stop-color:#2a6aa8"/>
+    </linearGradient>
+    <linearGradient id="mediumGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5a0a0;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#e88080;stop-opacity:0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Flask body (lying flat, side view - larger) -->
+  <path d="M5 15 L105 15 L105 70 L5 70 Z"
+        fill="url(#plasticGradient)" stroke="#b0b0b0" stroke-width="1"/>
+
+  <!-- Culture medium (pink/red) -->
+  <path d="M6 52 L104 52 L104 69 L6 69 Z" fill="url(#mediumGradient)"/>
+
+  <!-- Neck (angled up) -->
+  <path d="M105 30 L125 22 L125 38 L105 45 Z"
+        fill="url(#plasticGradient)" stroke="#b0b0b0" stroke-width="1"/>
+
+  <!-- Cap -->
+  <rect x="123" y="18" width="12" height="22" rx="2" ry="2" fill="url(#capGradient)" stroke="#2a5a88" stroke-width="0.5"/>
+
+  <!-- Cap ridges -->
+  <line x1="124" y1="22" x2="134" y2="22" stroke="#2a6aa8" stroke-width="0.5"/>
+  <line x1="124" y1="26" x2="134" y2="26" stroke="#2a6aa8" stroke-width="0.5"/>
+  <line x1="124" y1="30" x2="134" y2="30" stroke="#2a6aa8" stroke-width="0.5"/>
+  <line x1="124" y1="34" x2="134" y2="34" stroke="#2a6aa8" stroke-width="0.5"/>
+
+  <!-- Flask reflection -->
+  <path d="M10 18 L100 18" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Label area -->
+  <rect x="30" y="28" width="45" height="15" fill="#ffffff" stroke="#d0d0d0" stroke-width="0.5" opacity="0.8"/>
+  <text x="52" y="39" font-family="Arial" font-size="8" fill="#666" text-anchor="middle">T-75</text>
+</svg>

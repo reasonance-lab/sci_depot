@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" width="80" height="100">
+  <defs>
+    <linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.9"/>
+      <stop offset="20%" style="stop-color:#ffffff;stop-opacity:0.3"/>
+      <stop offset="80%" style="stop-color:#d4e8f0;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#b8d4e0;stop-opacity:0.8"/>
+    </linearGradient>
+    <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7ec8e3;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#a8dff0;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#5eb5d6;stop-opacity:0.9"/>
+    </linearGradient>
+    <linearGradient id="liquidSurface" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#c8eef8;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#7ec8e3;stop-opacity:0.8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Beaker body -->
+  <path d="M10 8 L10 90 Q10 95 15 95 L65 95 Q70 95 70 90 L70 8"
+        fill="url(#glassGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Liquid (60% full) -->
+  <path d="M11 40 L11 90 Q11 94 15 94 L65 94 Q69 94 69 90 L69 40 Z"
+        fill="url(#liquidGradient)"/>
+
+  <!-- Liquid surface -->
+  <ellipse cx="40" cy="40" rx="29" ry="3" fill="url(#liquidSurface)"/>
+
+  <!-- Spout -->
+  <path d="M10 8 Q5 8 3 12 L3 20 Q5 18 10 18"
+        fill="url(#glassGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Top rim -->
+  <line x1="10" y1="8" x2="70" y2="8" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Measurement marks -->
+  <line x1="62" y1="25" x2="68" y2="25" stroke="#6ba3be" stroke-width="0.8" opacity="0.6"/>
+  <line x1="62" y1="45" x2="68" y2="45" stroke="#6ba3be" stroke-width="0.8" opacity="0.6"/>
+  <line x1="62" y1="65" x2="68" y2="65" stroke="#6ba3be" stroke-width="0.8" opacity="0.6"/>
+  <line x1="64" y1="35" x2="68" y2="35" stroke="#6ba3be" stroke-width="0.5" opacity="0.4"/>
+  <line x1="64" y1="55" x2="68" y2="55" stroke="#6ba3be" stroke-width="0.5" opacity="0.4"/>
+  <line x1="64" y1="75" x2="68" y2="75" stroke="#6ba3be" stroke-width="0.5" opacity="0.4"/>
+
+  <!-- Glass reflection -->
+  <path d="M15 20 L15 35" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+</svg>

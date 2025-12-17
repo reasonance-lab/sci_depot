@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" width="80" height="100">
+  <defs>
+    <linearGradient id="funnelGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#d4e8f0;stop-opacity:0.9"/>
+      <stop offset="30%" style="stop-color:#ffffff;stop-opacity:0.4"/>
+      <stop offset="70%" style="stop-color:#d4e8f0;stop-opacity:0.7"/>
+      <stop offset="100%" style="stop-color:#b8d4e0;stop-opacity:0.9"/>
+    </linearGradient>
+    <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7ec8e3;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#a8dff0;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#5eb5d6;stop-opacity:0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Funnel cone -->
+  <path d="M5 5 L75 5 L45 70 L35 70 Z"
+        fill="url(#funnelGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Funnel rim -->
+  <ellipse cx="40" cy="5" rx="35" ry="8" fill="url(#funnelGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Inner rim -->
+  <ellipse cx="40" cy="5" rx="30" ry="6" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.5"/>
+
+  <!-- Liquid in funnel -->
+  <path d="M15 20 L65 20 L47 60 L33 60 Z" fill="url(#liquidGradient)" opacity="0.9"/>
+  <ellipse cx="40" cy="20" rx="25" ry="5" fill="#c8eef8" opacity="0.8"/>
+
+  <!-- Funnel stem -->
+  <rect x="35" y="70" width="10" height="28" fill="url(#funnelGradient)" stroke="#6ba3be" stroke-width="1"/>
+
+  <!-- Drip -->
+  <ellipse cx="40" cy="96" rx="2" ry="3" fill="#7ec8e3" opacity="0.9"/>
+
+  <!-- Glass reflection -->
+  <path d="M12 15 L30 55" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/>
+</svg>

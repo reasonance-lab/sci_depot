@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 180" width="150" height="180">
+  <defs>
+    <linearGradient id="stirrerBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f5f5"/>
+      <stop offset="50%" style="stop-color:#e8e8e8"/>
+      <stop offset="100%" style="stop-color:#d0d0d0"/>
+    </linearGradient>
+    <linearGradient id="stirrerTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#e0e0e0"/>
+    </linearGradient>
+    <linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.9"/>
+      <stop offset="30%" style="stop-color:#ffffff;stop-opacity:0.3"/>
+      <stop offset="70%" style="stop-color:#d4e8f0;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#b8d4e0;stop-opacity:0.8"/>
+    </linearGradient>
+    <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7ec8e3;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#a8dff0;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#5eb5d6;stop-opacity:0.9"/>
+    </linearGradient>
+    <radialGradient id="knobGradient" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#4a4a4a"/>
+      <stop offset="100%" style="stop-color:#2a2a2a"/>
+    </radialGradient>
+    <linearGradient id="displayGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a3a1a"/>
+      <stop offset="100%" style="stop-color:#0d1f0d"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Stirrer base body -->
+  <rect x="15" y="130" width="120" height="45" rx="5" ry="5" fill="url(#stirrerBody)" stroke="#a0a0a0" stroke-width="1"/>
+
+  <!-- Stirrer top plate -->
+  <rect x="20" y="120" width="110" height="15" rx="3" ry="3" fill="url(#stirrerTop)" stroke="#b0b0b0" stroke-width="1"/>
+
+  <!-- Control panel area -->
+  <rect x="25" y="140" width="100" height="28" rx="2" ry="2" fill="#e0e0e0" stroke="#c0c0c0" stroke-width="0.5"/>
+
+  <!-- Speed knob -->
+  <circle cx="45" cy="154" r="10" fill="url(#knobGradient)"/>
+  <circle cx="45" cy="154" r="7" fill="none" stroke="#5a5a5a" stroke-width="1"/>
+  <line x1="45" y1="147" x2="45" y2="150" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Temperature knob -->
+  <circle cx="85" cy="154" r="10" fill="url(#knobGradient)"/>
+  <circle cx="85" cy="154" r="7" fill="none" stroke="#5a5a5a" stroke-width="1"/>
+  <line x1="85" y1="147" x2="85" y2="150" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Display -->
+  <rect x="100" y="145" width="20" height="12" rx="1" ry="1" fill="url(#displayGradient)"/>
+  <text x="103" y="154" font-family="monospace" font-size="8" fill="#00ff00">120</text>
+
+  <!-- Power indicator LED -->
+  <circle cx="30" cy="168" r="3" fill="#00cc00"/>
+
+  <!-- Beaker on stirrer -->
+  <g transform="translate(35, 20)">
+    <!-- Beaker body -->
+    <path d="M10 8 L10 90 Q10 95 15 95 L65 95 Q70 95 70 90 L70 8"
+          fill="url(#glassGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+    <!-- Liquid -->
+    <path d="M11 30 L11 90 Q11 94 15 94 L65 94 Q69 94 69 90 L69 30 Z"
+          fill="url(#liquidGradient)"/>
+
+    <!-- Liquid surface -->
+    <ellipse cx="40" cy="30" rx="29" ry="3" fill="#c8eef8" opacity="0.8"/>
+
+    <!-- Spout -->
+    <path d="M10 8 Q5 8 3 12 L3 20 Q5 18 10 18"
+          fill="url(#glassGradient)" stroke="#6ba3be" stroke-width="1.5"/>
+
+    <!-- Top rim -->
+    <line x1="10" y1="8" x2="70" y2="8" stroke="#6ba3be" stroke-width="1.5"/>
+
+    <!-- Stir bar -->
+    <rect x="30" y="85" width="20" height="5" rx="2" ry="2" fill="#404040" stroke="#303030" stroke-width="0.5"/>
+
+    <!-- Glass reflection -->
+    <path d="M15 15 L15 25" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+  </g>
+
+  <!-- Labels -->
+  <text x="45" y="142" font-family="Arial" font-size="5" fill="#666" text-anchor="middle">SPEED</text>
+  <text x="85" y="142" font-family="Arial" font-size="5" fill="#666" text-anchor="middle">TEMP</text>
+</svg>

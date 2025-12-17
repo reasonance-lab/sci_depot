@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 100" width="50" height="100">
+  <defs>
+    <linearGradient id="bottleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3a2a1a;stop-opacity:0.95"/>
+      <stop offset="30%" style="stop-color:#5a4030;stop-opacity:0.9"/>
+      <stop offset="70%" style="stop-color:#4a3525;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#2a1a0a;stop-opacity:0.98"/>
+    </linearGradient>
+    <linearGradient id="rubberBulb" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a2a2a"/>
+      <stop offset="30%" style="stop-color:#1a1a1a"/>
+      <stop offset="100%" style="stop-color:#0a0a0a"/>
+    </linearGradient>
+    <linearGradient id="glassDropper" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#d4e8f0;stop-opacity:0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rubber bulb -->
+  <ellipse cx="25" cy="12" rx="10" ry="10" fill="url(#rubberBulb)" stroke="#000" stroke-width="0.5"/>
+
+  <!-- Bulb highlight -->
+  <ellipse cx="22" cy="9" rx="3" ry="4" fill="#3a3a3a" opacity="0.5"/>
+
+  <!-- Glass dropper tube (top part) -->
+  <rect x="22" y="20" width="6" height="15" fill="url(#glassDropper)" stroke="#6ba3be" stroke-width="0.5"/>
+
+  <!-- Bottle body -->
+  <path d="M10 40 L10 90 Q10 95 15 95 L35 95 Q40 95 40 90 L40 40 Q40 35 35 35 L15 35 Q10 35 10 40"
+        fill="url(#bottleGradient)" stroke="#1a0a00" stroke-width="1"/>
+
+  <!-- Bottle neck -->
+  <rect x="18" y="32" width="14" height="8" fill="url(#bottleGradient)" stroke="#1a0a00" stroke-width="0.8"/>
+
+  <!-- Dropper inside bottle (visible through glass) -->
+  <line x1="25" y1="35" x2="25" y2="80" stroke="#d4e8f0" stroke-width="2" opacity="0.4"/>
+
+  <!-- Dropper tip (tapered) -->
+  <path d="M23 80 L25 90 L27 80" fill="url(#glassDropper)" stroke="#6ba3be" stroke-width="0.5" opacity="0.5"/>
+
+  <!-- Bottle label area -->
+  <rect x="14" y="55" width="22" height="20" fill="#f5f5dc" stroke="#d0c8a0" stroke-width="0.5" rx="1" ry="1"/>
+  <text x="25" y="68" font-family="Arial" font-size="5" fill="#333" text-anchor="middle">pH</text>
+  <text x="25" y="73" font-family="Arial" font-size="4" fill="#666" text-anchor="middle">Indicator</text>
+
+  <!-- Bottle reflection -->
+  <path d="M14 45 L14 88" stroke="#5a4a3a" stroke-width="1" opacity="0.3"/>
+</svg>
