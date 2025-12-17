@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+  <defs>
+    <linearGradient id="glassGradientStir" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.9"/>
+      <stop offset="20%" style="stop-color:#ffffff;stop-opacity:0.3"/>
+      <stop offset="80%" style="stop-color:#d4e8f0;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#b8d4e0;stop-opacity:0.8"/>
+    </linearGradient>
+    <linearGradient id="liquidGradientStir" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7ec8e3;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#a8dff0;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#5eb5d6;stop-opacity:0.9"/>
+    </linearGradient>
+    <linearGradient id="vortexGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.6"/>
+      <stop offset="50%" style="stop-color:#c8eef8;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#7ec8e3;stop-opacity:0.4"/>
+    </linearGradient>
+    <linearGradient id="stirBarGradientBeaker" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="50%" style="stop-color:#f0f0f0"/>
+      <stop offset="100%" style="stop-color:#d0d0d0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Beaker body -->
+  <path d="M15 10 L15 100 Q15 110 25 110 L75 110 Q85 110 85 100 L85 10"
+        fill="url(#glassGradientStir)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Liquid (with space for vortex) -->
+  <path d="M16 25 L16 100 Q16 109 25 109 L75 109 Q84 109 84 100 L84 25 Z"
+        fill="url(#liquidGradientStir)"/>
+
+  <!-- Vortex funnel -->
+  <path d="M35 25 Q40 45 45 60 Q48 75 50 95 Q52 75 55 60 Q60 45 65 25"
+        fill="url(#vortexGradient)" stroke="none"/>
+
+  <!-- Vortex spiral lines -->
+  <path d="M38 30 Q42 35 50 35 Q58 35 62 30" fill="none" stroke="#ffffff" stroke-width="0.8" opacity="0.6"/>
+  <path d="M42 42 Q46 46 50 46 Q54 46 58 42" fill="none" stroke="#ffffff" stroke-width="0.6" opacity="0.5"/>
+  <path d="M45 55 Q48 58 50 58 Q52 58 55 55" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.4"/>
+  <path d="M47 70 Q49 72 50 72 Q51 72 53 70" fill="none" stroke="#ffffff" stroke-width="0.4" opacity="0.3"/>
+
+  <!-- Liquid surface (disturbed by vortex) -->
+  <ellipse cx="50" cy="25" rx="34" ry="4" fill="#c8eef8" opacity="0.8"/>
+
+  <!-- Stir bar at bottom (tilted to show rotation) -->
+  <g transform="translate(50, 102) rotate(25)">
+    <rect x="-12" y="-3" width="24" height="6" rx="3" ry="3" fill="url(#stirBarGradientBeaker)" stroke="#c0c0c0" stroke-width="0.5"/>
+    <path d="M-9 -2 L9 -2" stroke="#ffffff" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+  </g>
+
+  <!-- Motion lines around stir bar -->
+  <path d="M32 98 Q28 102 32 106" fill="none" stroke="#6ba3be" stroke-width="0.5" opacity="0.4"/>
+  <path d="M68 98 Q72 102 68 106" fill="none" stroke="#6ba3be" stroke-width="0.5" opacity="0.4"/>
+
+  <!-- Spout -->
+  <path d="M15 10 Q8 10 5 16 L5 28 Q8 25 15 25"
+        fill="url(#glassGradientStir)" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Top rim -->
+  <line x1="15" y1="10" x2="85" y2="10" stroke="#6ba3be" stroke-width="1.5"/>
+
+  <!-- Graduation marks -->
+  <line x1="76" y1="40" x2="83" y2="40" stroke="#6ba3be" stroke-width="0.8" opacity="0.5"/>
+  <line x1="76" y1="60" x2="83" y2="60" stroke="#6ba3be" stroke-width="0.8" opacity="0.5"/>
+  <line x1="76" y1="80" x2="83" y2="80" stroke="#6ba3be" stroke-width="0.8" opacity="0.5"/>
+
+  <!-- Glass reflection -->
+  <path d="M20 15 L20 22" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+</svg>

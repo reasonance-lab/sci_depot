@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 120" width="30" height="120">
+  <defs>
+    <linearGradient id="bodyGradientP200" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2a5080"/>
+      <stop offset="30%" style="stop-color:#4070a0"/>
+      <stop offset="70%" style="stop-color:#3060a0"/>
+      <stop offset="100%" style="stop-color:#1a4070"/>
+    </linearGradient>
+    <linearGradient id="plungerGradientP200" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#d0d0d0"/>
+      <stop offset="50%" style="stop-color:#f0f0f0"/>
+      <stop offset="100%" style="stop-color:#b0b0b0"/>
+    </linearGradient>
+    <linearGradient id="tipGradientP200" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.95"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#d4e8f0;stop-opacity:0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Plunger button -->
+  <ellipse cx="15" cy="5" rx="6" ry="2.5" fill="url(#plungerGradientP200)" stroke="#909090" stroke-width="0.5"/>
+  <path d="M9 5 L9 15 Q9 17 10.5 17 L19.5 17 Q21 17 21 15 L21 5"
+        fill="url(#plungerGradientP200)" stroke="#909090" stroke-width="0.5"/>
+
+  <!-- Main body upper section -->
+  <path d="M7 17 L7 42 Q7 44 8.5 44 L21.5 44 Q23 44 23 42 L23 17"
+        fill="url(#bodyGradientP200)" stroke="#1a3a5a" stroke-width="0.8"/>
+
+  <!-- Volume display window -->
+  <rect x="9" y="23" width="12" height="14" rx="1" fill="#f8f8f8" stroke="#909090" stroke-width="0.5"/>
+  <text x="10.5" y="30" font-family="monospace" font-size="4.5" fill="#333">200</text>
+  <text x="13" y="35" font-family="Arial" font-size="3.5" fill="#666">µL</text>
+
+  <!-- Finger rest -->
+  <path d="M5 44 L5 49 Q5 52 8.5 52 L21.5 52 Q25 52 25 49 L25 44"
+        fill="url(#bodyGradientP200)" stroke="#1a3a5a" stroke-width="0.8"/>
+
+  <!-- Main body lower section -->
+  <path d="M8.5 52 L8.5 78 Q8.5 80 10.5 80 L19.5 80 Q21.5 80 21.5 78 L21.5 52"
+        fill="url(#bodyGradientP200)" stroke="#1a3a5a" stroke-width="0.8"/>
+
+  <!-- Tip ejector button -->
+  <rect x="3" y="58" width="3.5" height="12" rx="1" fill="#4a4a4a" stroke="#333" stroke-width="0.5"/>
+
+  <!-- Lower shaft -->
+  <path d="M11.5 80 L11.5 94 L18.5 94 L18.5 80"
+        fill="#c0c0c0" stroke="#909090" stroke-width="0.5"/>
+
+  <!-- Tip holder -->
+  <path d="M12 94 L12 102 L18 102 L18 94"
+        fill="#909090" stroke="#707070" stroke-width="0.5"/>
+
+  <!-- Pipette tip -->
+  <path d="M11 102 L11 104 L15 120 L19 104 L19 102"
+        fill="url(#tipGradientP200)" stroke="#a0b8c8" stroke-width="0.5"/>
+
+  <!-- Body highlights -->
+  <path d="M9.5 20 L9.5 40" stroke="#5090c0" stroke-width="0.8" opacity="0.4"/>
+  <path d="M9.5 55 L9.5 75" stroke="#5090c0" stroke-width="0.8" opacity="0.4"/>
+</svg>

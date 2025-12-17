@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 120" width="40" height="120">
+  <defs>
+    <linearGradient id="tubeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.95"/>
+      <stop offset="30%" style="stop-color:#ffffff;stop-opacity:0.5"/>
+      <stop offset="70%" style="stop-color:#d4e8f0;stop-opacity:0.7"/>
+      <stop offset="100%" style="stop-color:#b8d4e0;stop-opacity:0.9"/>
+    </linearGradient>
+    <linearGradient id="capGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4a90c2"/>
+      <stop offset="50%" style="stop-color:#6aade0"/>
+      <stop offset="100%" style="stop-color:#3a80b2"/>
+    </linearGradient>
+    <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f0a0a0;stop-opacity:0.85"/>
+      <stop offset="50%" style="stop-color:#f8c0c0;stop-opacity:0.75"/>
+      <stop offset="100%" style="stop-color:#e08080;stop-opacity:0.85"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Conical tube body -->
+  <path d="M8 25 L8 85 L20 115 L32 85 L32 25"
+        fill="url(#tubeGradient)" stroke="#6ba3be" stroke-width="1"/>
+
+  <!-- Liquid (pink) -->
+  <path d="M9 45 L9 85 L20 113 L31 85 L31 45 Z"
+        fill="url(#liquidGradient)"/>
+
+  <!-- Liquid surface -->
+  <ellipse cx="20" cy="45" rx="11" ry="3" fill="#f8d0d0" opacity="0.8"/>
+
+  <!-- Graduation marks -->
+  <line x1="28" y1="55" x2="31" y2="55" stroke="#6ba3be" stroke-width="0.5" opacity="0.6"/>
+  <line x1="28" y1="65" x2="31" y2="65" stroke="#6ba3be" stroke-width="0.5" opacity="0.6"/>
+  <line x1="28" y1="75" x2="31" y2="75" stroke="#6ba3be" stroke-width="0.5" opacity="0.6"/>
+  <text x="26" y="57" font-family="Arial" font-size="3" fill="#6ba3be" opacity="0.6">5</text>
+  <text x="24" y="67" font-family="Arial" font-size="3" fill="#6ba3be" opacity="0.6">10</text>
+  <text x="24" y="77" font-family="Arial" font-size="3" fill="#6ba3be" opacity="0.6">15</text>
+
+  <!-- Tube rim -->
+  <ellipse cx="20" cy="25" rx="12" ry="4" fill="url(#tubeGradient)" stroke="#6ba3be" stroke-width="1"/>
+
+  <!-- Screw cap -->
+  <ellipse cx="20" cy="25" rx="13" ry="5" fill="url(#capGradient)" stroke="#3a70a2" stroke-width="0.8"/>
+  <path d="M7 25 L7 12 Q7 8 10 6 L30 6 Q33 8 33 12 L33 25"
+        fill="url(#capGradient)" stroke="#3a70a2" stroke-width="0.8"/>
+  <ellipse cx="20" cy="6" rx="10" ry="3" fill="#5a9fd0" stroke="#3a70a2" stroke-width="0.5"/>
+
+  <!-- Cap ridges -->
+  <line x1="9" y1="10" x2="9" y2="22" stroke="#3a80b2" stroke-width="0.5" opacity="0.5"/>
+  <line x1="13" y1="8" x2="13" y2="24" stroke="#3a80b2" stroke-width="0.5" opacity="0.5"/>
+  <line x1="17" y1="7" x2="17" y2="24" stroke="#3a80b2" stroke-width="0.5" opacity="0.5"/>
+  <line x1="23" y1="7" x2="23" y2="24" stroke="#3a80b2" stroke-width="0.5" opacity="0.5"/>
+  <line x1="27" y1="8" x2="27" y2="24" stroke="#3a80b2" stroke-width="0.5" opacity="0.5"/>
+  <line x1="31" y1="10" x2="31" y2="22" stroke="#3a80b2" stroke-width="0.5" opacity="0.5"/>
+
+  <!-- Glass reflection -->
+  <path d="M11 30 L11 80" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/>
+</svg>
