@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 60" width="50" height="60">
+  <defs>
+    <linearGradient id="plasticGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.95"/>
+      <stop offset="30%" style="stop-color:#ffffff;stop-opacity:0.5"/>
+      <stop offset="70%" style="stop-color:#e0f0f4;stop-opacity:0.7"/>
+      <stop offset="100%" style="stop-color:#c8e0e8;stop-opacity:0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Small graduated beaker body -->
+  <path d="M8 8 L8 52 Q8 56 12 56 L38 56 Q42 56 42 52 L42 8"
+        fill="url(#plasticGradient)" stroke="#90b0c0" stroke-width="1"/>
+
+  <!-- Spout -->
+  <path d="M8 8 Q4 8 2 12 L2 18 Q4 16 8 16"
+        fill="url(#plasticGradient)" stroke="#90b0c0" stroke-width="1"/>
+
+  <!-- Top rim -->
+  <line x1="8" y1="8" x2="42" y2="8" stroke="#90b0c0" stroke-width="1"/>
+
+  <!-- Graduation marks -->
+  <line x1="35" y1="18" x2="40" y2="18" stroke="#6090a0" stroke-width="0.6"/>
+  <line x1="35" y1="28" x2="40" y2="28" stroke="#6090a0" stroke-width="0.6"/>
+  <line x1="35" y1="38" x2="40" y2="38" stroke="#6090a0" stroke-width="0.6"/>
+  <line x1="35" y1="48" x2="40" y2="48" stroke="#6090a0" stroke-width="0.6"/>
+
+  <!-- Graduation labels -->
+  <text x="32" y="20" font-family="Arial" font-size="3" fill="#6090a0">10</text>
+  <text x="32" y="30" font-family="Arial" font-size="3" fill="#6090a0">20</text>
+  <text x="32" y="40" font-family="Arial" font-size="3" fill="#6090a0">30</text>
+  <text x="32" y="50" font-family="Arial" font-size="3" fill="#6090a0">40</text>
+
+  <!-- Handle ridge -->
+  <path d="M42 15 Q46 15 46 20 L46 40 Q46 45 42 45"
+        fill="none" stroke="#90b0c0" stroke-width="1.5"/>
+
+  <!-- Glass reflection -->
+  <path d="M12 12 L12 20" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.5"/>
+</svg>
