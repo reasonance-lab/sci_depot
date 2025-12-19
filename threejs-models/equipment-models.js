@@ -526,24 +526,33 @@ function createErlenmeyerFlask() {
     outerPoints.push(new THREE.Vector2(bottomRadius - 0.08, 0.02));
     outerPoints.push(new THREE.Vector2(bottomRadius, 0.08));
 
-    // Straight conical sides (the defining feature of Erlenmeyer)
-    // Linear taper from bottom to shoulder
-    const shoulderHeight = bodyHeight * 0.85;
-    outerPoints.push(new THREE.Vector2(bottomRadius, 0.12));
-    outerPoints.push(new THREE.Vector2(neckRadius + 0.15, shoulderHeight));
+    // Straight conical sides - but stop earlier to allow smooth transition
+    const coneEndHeight = bodyHeight * 0.65;  // Cone goes up to 65% of body height
+    const coneEndRadius = bottomRadius - (bottomRadius - neckRadius) * (coneEndHeight / bodyHeight);
 
-    // Smooth shoulder curve transitioning to neck
-    const shoulderSteps = 12;
+    outerPoints.push(new THREE.Vector2(bottomRadius, 0.12));
+    outerPoints.push(new THREE.Vector2(coneEndRadius, coneEndHeight));
+
+    // Smooth shoulder curve using cubic easing
+    // This creates a gradual S-curve from cone to neck
+    const shoulderSteps = 25;
+    const transitionHeight = bodyHeight - coneEndHeight;
+
     for (let i = 1; i <= shoulderSteps; i++) {
         const t = i / shoulderSteps;
-        const angle = (Math.PI / 2) * t;
-        const r = neckRadius + 0.15 * Math.cos(angle);
-        const y = shoulderHeight + 0.15 * Math.sin(angle);
+        // Use smoothstep for gradual transition
+        const smoothT = t * t * (3 - 2 * t);
+
+        // Radius transitions from coneEndRadius to neckRadius
+        const r = coneEndRadius - (coneEndRadius - neckRadius) * smoothT;
+        // Height goes from coneEndHeight to bodyHeight
+        const y = coneEndHeight + transitionHeight * t;
+
         outerPoints.push(new THREE.Vector2(r, y));
     }
 
     // Cylindrical neck
-    outerPoints.push(new THREE.Vector2(neckRadius, shoulderHeight + 0.15));
+    outerPoints.push(new THREE.Vector2(neckRadius, bodyHeight));
     outerPoints.push(new THREE.Vector2(neckRadius, bodyHeight + neckHeight));
 
     // Rolled rim
@@ -556,23 +565,27 @@ function createErlenmeyerFlask() {
     const flaskOuter = new THREE.Mesh(outerGeometry, borosilicateGlass.clone());
     flaskOuter.castShadow = true;
 
-    // Inner profile
+    // Inner profile - follows the same curve logic
     const innerPoints = [];
-    innerPoints.push(new THREE.Vector2(0.001, bottomThickness));
-    innerPoints.push(new THREE.Vector2(bottomRadius - wallThickness - 0.15, bottomThickness));
-    innerPoints.push(new THREE.Vector2(bottomRadius - wallThickness, bottomThickness + 0.05));
-    innerPoints.push(new THREE.Vector2(neckRadius - wallThickness + 0.12, shoulderHeight - 0.05));
+    const innerBottomR = bottomRadius - wallThickness;
+    const innerNeckR = neckRadius - wallThickness;
+    const innerConeEndR = innerBottomR - (innerBottomR - innerNeckR) * (coneEndHeight / bodyHeight);
 
-    // Inner shoulder
-    for (let i = 1; i <= 8; i++) {
-        const t = i / 8;
-        const angle = (Math.PI / 2) * t;
-        const r = (neckRadius - wallThickness) + 0.12 * Math.cos(angle);
-        const y = shoulderHeight - 0.05 + 0.12 * Math.sin(angle);
+    innerPoints.push(new THREE.Vector2(0.001, bottomThickness));
+    innerPoints.push(new THREE.Vector2(innerBottomR - 0.15, bottomThickness));
+    innerPoints.push(new THREE.Vector2(innerBottomR, bottomThickness + 0.05));
+    innerPoints.push(new THREE.Vector2(innerConeEndR, coneEndHeight));
+
+    // Inner shoulder curve
+    for (let i = 1; i <= shoulderSteps; i++) {
+        const t = i / shoulderSteps;
+        const smoothT = t * t * (3 - 2 * t);
+        const r = innerConeEndR - (innerConeEndR - innerNeckR) * smoothT;
+        const y = coneEndHeight + transitionHeight * t;
         innerPoints.push(new THREE.Vector2(r, y));
     }
 
-    innerPoints.push(new THREE.Vector2(neckRadius - wallThickness, bodyHeight + neckHeight));
+    innerPoints.push(new THREE.Vector2(innerNeckR, bodyHeight + neckHeight));
 
     const innerGeometry = new THREE.LatheGeometry(innerPoints, 64);
     const innerMat = borosilicateGlass.clone();
@@ -585,12 +598,12 @@ function createErlenmeyerFlask() {
 
     // Calculate liquid radius at different heights (linear interpolation for cone)
     const liquidBottomR = bottomRadius - wallThickness - 0.03;
-    const slope = (neckRadius - bottomRadius) / shoulderHeight;
+    const coneSlope = (neckRadius - bottomRadius) / bodyHeight;
 
     liquidPoints.push(new THREE.Vector2(0.001, bottomThickness + 0.01));
     liquidPoints.push(new THREE.Vector2(liquidBottomR, bottomThickness + 0.02));
 
-    const liquidTopR = liquidBottomR + slope * liquidHeight;
+    const liquidTopR = liquidBottomR + coneSlope * liquidHeight;
     liquidPoints.push(new THREE.Vector2(liquidTopR, liquidHeight + bottomThickness));
 
     // Meniscus
@@ -612,7 +625,7 @@ function createErlenmeyerFlask() {
     });
 
     [0.8, 1.4, 2.0, 2.5].forEach(y => {
-        const radiusAtY = bottomRadius + slope * y;
+        const radiusAtY = bottomRadius + coneSlope * y;
         if (radiusAtY > neckRadius + 0.1) {
             const markGeometry = new THREE.TorusGeometry(radiusAtY + 0.01, 0.006, 4, 16, 0.15);
             const mark = new THREE.Mesh(markGeometry, markMaterial);
