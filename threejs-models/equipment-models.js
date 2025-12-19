@@ -259,50 +259,68 @@ const modelInfo = {
 function createStirBar() {
     const group = new THREE.Group();
 
-    // Main body - capsule shape using lathe
-    const capsulePoints = [];
-    const segments = 32;
-    const length = 2.0;
-    const radius = 0.25;
+    // ============================================
+    // MAGNETIC STIR BAR - Capsule/pill shape
+    // PTFE-coated with embedded magnet
+    // ============================================
+    const length = 1.8;      // Total length
+    const radius = 0.22;     // Radius of the bar
+    const segments = 24;
 
-    // Create capsule profile
-    for (let i = 0; i <= segments; i++) {
-        const angle = (Math.PI / 2) * (i / segments);
-        capsulePoints.push(new THREE.Vector2(
-            Math.cos(angle) * radius,
-            -length/2 + Math.sin(angle) * radius
-        ));
+    // Create capsule profile for lathe geometry
+    // Profile goes: top center -> top hemisphere -> cylinder side -> bottom hemisphere -> bottom center
+    const capsulePoints = [];
+
+    // Start at top center
+    capsulePoints.push(new THREE.Vector2(0.001, length / 2));
+
+    // Top hemisphere (quarter circle from top to side)
+    for (let i = 1; i <= segments; i++) {
+        const t = i / segments;
+        const angle = (Math.PI / 2) * t;  // 0 to 90 degrees
+        const r = Math.sin(angle) * radius;
+        const y = (length / 2 - radius) + Math.cos(angle) * radius;
+        capsulePoints.push(new THREE.Vector2(r, y));
     }
-    for (let i = 0; i <= segments; i++) {
-        const angle = (Math.PI / 2) + (Math.PI / 2) * (i / segments);
-        capsulePoints.push(new THREE.Vector2(
-            Math.cos(angle) * radius,
-            length/2 - radius + Math.sin(angle) * radius + radius
-        ));
+
+    // Cylinder side (straight section) - just need the bottom point since top is from hemisphere
+    capsulePoints.push(new THREE.Vector2(radius, -(length / 2 - radius)));
+
+    // Bottom hemisphere (quarter circle from side to bottom)
+    for (let i = 1; i <= segments; i++) {
+        const t = i / segments;
+        const angle = (Math.PI / 2) * t;  // 0 to 90 degrees
+        const r = Math.cos(angle) * radius;
+        const y = -(length / 2 - radius) - Math.sin(angle) * radius;
+        capsulePoints.push(new THREE.Vector2(r, y));
     }
+
+    // End at bottom center
+    capsulePoints.push(new THREE.Vector2(0.001, -length / 2));
 
     const capsuleGeometry = new THREE.LatheGeometry(capsulePoints, 32);
     const stirBar = new THREE.Mesh(capsuleGeometry, ptfeMaterial.clone());
-    stirBar.rotation.z = Math.PI / 2;
     stirBar.castShadow = true;
-    stirBar.position.y = -1.75;
+    stirBar.receiveShadow = true;
 
-    // Add subtle highlight ring
-    const ringGeometry = new THREE.TorusGeometry(0.28, 0.02, 8, 32);
-    const highlightMaterial = new THREE.MeshStandardMaterial({
-        color: 0x606060,
-        metalness: 0.3,
-        roughness: 0.2
+    // Position on table (lying flat - rotate to horizontal)
+    stirBar.rotation.x = Math.PI / 2;
+    stirBar.position.y = -1.88 + radius;
+
+    // Add subtle center ridge (characteristic of many stir bars)
+    const ridgeGeometry = new THREE.TorusGeometry(radius + 0.01, 0.015, 8, 32);
+    const ridgeMaterial = new THREE.MeshStandardMaterial({
+        color: 0x505050,
+        metalness: 0.2,
+        roughness: 0.3
     });
-    const ring1 = new THREE.Mesh(ringGeometry, highlightMaterial);
-    ring1.rotation.y = Math.PI / 2;
-    ring1.position.x = -0.6;
-    ring1.position.y = -1.75;
+    const ridge = new THREE.Mesh(ridgeGeometry, ridgeMaterial);
+    ridge.rotation.x = Math.PI / 2;
+    ridge.position.y = -1.88 + radius;
 
-    const ring2 = ring1.clone();
-    ring2.position.x = 0.6;
+    group.add(stirBar);
+    group.add(ridge);
 
-    group.add(stirBar, ring1, ring2);
     return group;
 }
 
