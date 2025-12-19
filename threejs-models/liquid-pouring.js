@@ -861,13 +861,21 @@ class InteractionManager {
         this.lastMouseX = 0;
         this.lastMouseY = 0;
         this.initialMouseY = 0;
-        this.rotationSpeed = 0.012;
+        this.rotationSpeed = 0.008;
+        this.liftSpeed = 0.015;
 
-        // Track initial rotation for smooth tilting
+        // Track initial state for smooth interactions
         this.initialRotation = new THREE.Euler();
+        this.initialPosition = new THREE.Vector3();
+        this.baseY = -1.9; // Default Y position (on table)
+        this.minY = -1.9;  // Minimum height (table level)
+        this.maxY = 4;     // Maximum lift height
 
-        // Container return-to-upright animation
+        // Container return animations (position and rotation)
         this.returnAnimations = new Map();
+
+        // Shift key state for tilt control
+        this.shiftPressed = false;
 
         this.setupEventListeners();
     }
@@ -879,6 +887,14 @@ class InteractionManager {
         canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
         canvas.addEventListener('mouseup', (e) => this.onMouseUp(e));
         canvas.addEventListener('mouseleave', (e) => this.onMouseUp(e));
+
+        // Track shift key for tilt mode
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Shift') this.shiftPressed = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'Shift') this.shiftPressed = false;
+        });
 
         // Touch support for mobile
         canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
@@ -911,45 +927,63 @@ class InteractionManager {
             // Cancel any return animation for this container
             this.returnAnimations.delete(this.selectedContainer);
 
-            // Calculate mouse delta for rotation
+            // Calculate mouse delta
             const deltaX = event.clientX - this.lastMouseX;
             const deltaY = event.clientY - this.lastMouseY;
-            const totalDeltaY = event.clientY - this.initialMouseY;
 
-            // Move container horizontally based on mouse position
-            this.raycaster.setFromCamera(this.mouse, this.camera);
-            const intersectPoint = new THREE.Vector3();
-            this.dragPlane.constant = -this.selectedContainer.group.position.y - 1;
-            this.raycaster.ray.intersectPlane(this.dragPlane, intersectPoint);
+            const container = this.selectedContainer;
 
-            if (intersectPoint) {
-                // Smooth position interpolation
-                const targetX = intersectPoint.x - this.dragOffset.x;
-                const targetZ = intersectPoint.z - this.dragOffset.z;
+            if (this.shiftPressed) {
+                // SHIFT + DRAG: Tilt control only
+                // Vertical mouse movement = tilt forward/back
+                // Horizontal mouse movement = rotate (aim direction)
 
-                // Clamp to table bounds
-                const maxDist = 8;
-                this.selectedContainer.group.position.x = Math.max(-maxDist, Math.min(maxDist, targetX));
-                this.selectedContainer.group.position.z = Math.max(-maxDist, Math.min(maxDist, targetZ));
+                const currentTilt = container.group.rotation.z;
+                const newTilt = currentTilt - deltaY * this.rotationSpeed;
+                const clampedTilt = Math.max(-0.1, Math.min(Math.PI * 0.6, newTilt));
+
+                container.group.rotation.z = clampedTilt;
+                container.group.rotation.y += deltaX * this.rotationSpeed * 0.5;
+            } else {
+                // NORMAL DRAG: Lift and move
+                // Vertical mouse movement (up on screen) = lift container up
+                // Horizontal mouse movement = move container in XZ plane
+
+                // Lift based on vertical mouse movement
+                const liftDelta = -deltaY * this.liftSpeed;
+                const newY = container.group.position.y + liftDelta;
+                container.group.position.y = Math.max(this.minY, Math.min(this.maxY, newY));
+
+                // Move horizontally based on mouse position projected onto drag plane
+                this.raycaster.setFromCamera(this.mouse, this.camera);
+                const intersectPoint = new THREE.Vector3();
+                this.dragPlane.constant = -container.group.position.y;
+                this.raycaster.ray.intersectPlane(this.dragPlane, intersectPoint);
+
+                if (intersectPoint) {
+                    const targetX = intersectPoint.x - this.dragOffset.x;
+                    const targetZ = intersectPoint.z - this.dragOffset.z;
+
+                    // Clamp to table bounds
+                    const maxDist = 8;
+                    container.group.position.x = Math.max(-maxDist, Math.min(maxDist, targetX));
+                    container.group.position.z = Math.max(-maxDist, Math.min(maxDist, targetZ));
+                }
+
+                // Auto-tilt slightly when lifted high (natural pouring gesture)
+                const liftAmount = container.group.position.y - this.minY;
+                if (liftAmount > 1) {
+                    // Subtle auto-tilt when lifted - user can override with Shift+drag
+                    const autoTilt = Math.min(0.15, (liftAmount - 1) * 0.05);
+                    if (container.group.rotation.z < autoTilt) {
+                        container.group.rotation.z = THREE.MathUtils.lerp(
+                            container.group.rotation.z,
+                            autoTilt,
+                            0.1
+                        );
+                    }
+                }
             }
-
-            // Tilt container based on vertical mouse movement from initial position
-            // Moving mouse up = tilt forward (pour)
-            const targetTilt = -totalDeltaY * this.rotationSpeed;
-            const maxTilt = Math.PI * 0.55; // ~100 degrees max
-
-            // Calculate desired tilt (clamped)
-            const clampedTilt = Math.max(-0.1, Math.min(maxTilt, targetTilt));
-
-            // Get the current Y rotation (aiming direction)
-            const currentYRotation = this.selectedContainer.group.rotation.y;
-
-            // Set rotation with tilt on Z axis (pour direction) and Y axis (aiming)
-            this.selectedContainer.group.rotation.set(
-                0,
-                currentYRotation + deltaX * this.rotationSpeed * 0.3,
-                clampedTilt
-            );
 
             this.lastMouseX = event.clientX;
             this.lastMouseY = event.clientY;
@@ -983,12 +1017,13 @@ class InteractionManager {
             // Stop any return animation
             this.returnAnimations.delete(container);
 
-            // Store initial rotation
+            // Store initial state
             this.initialRotation.copy(container.group.rotation);
+            this.initialPosition.copy(container.group.position);
 
-            // Calculate drag offset
+            // Calculate drag offset on horizontal plane
             this.raycaster.setFromCamera(this.mouse, this.camera);
-            this.dragPlane.constant = -container.group.position.y - 1;
+            this.dragPlane.constant = -container.group.position.y;
             const intersectPoint = new THREE.Vector3();
             this.raycaster.ray.intersectPlane(this.dragPlane, intersectPoint);
 
@@ -1008,7 +1043,7 @@ class InteractionManager {
 
     onMouseUp(event) {
         if (this.selectedContainer) {
-            // Start return-to-upright animation
+            // Start return animation (both position and rotation)
             this.startReturnAnimation(this.selectedContainer);
 
             this.selectedContainer.isDragging = false;
@@ -1034,6 +1069,9 @@ class InteractionManager {
             event.preventDefault();
             const touch = event.touches[0];
             this.onMouseDown({ clientX: touch.clientX, clientY: touch.clientY, button: 0 });
+        } else if (event.touches.length === 2) {
+            // Two-finger touch = tilt mode (like shift key)
+            this.shiftPressed = true;
         }
     }
 
@@ -1042,20 +1080,37 @@ class InteractionManager {
             event.preventDefault();
             const touch = event.touches[0];
             this.onMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
+        } else if (event.touches.length === 2 && this.isDragging) {
+            event.preventDefault();
+            // Use first touch for control in tilt mode
+            const touch = event.touches[0];
+            this.shiftPressed = true;
+            this.onMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
         }
     }
 
     onTouchEnd(event) {
-        this.onMouseUp({});
+        if (event.touches.length < 2) {
+            this.shiftPressed = false;
+        }
+        if (event.touches.length === 0) {
+            this.onMouseUp({});
+        }
     }
 
-    // Smooth return-to-upright animation
+    // Smooth return animation (position + rotation)
     startReturnAnimation(container) {
         this.returnAnimations.set(container, {
             startRotation: container.group.rotation.clone(),
             targetRotation: new THREE.Euler(0, container.group.rotation.y, 0),
+            startPosition: container.group.position.clone(),
+            targetPosition: new THREE.Vector3(
+                container.group.position.x,
+                this.minY,
+                container.group.position.z
+            ),
             progress: 0,
-            duration: 0.5 // seconds
+            duration: 0.6 // seconds
         });
     }
 
@@ -1067,12 +1122,18 @@ class InteractionManager {
             if (anim.progress >= 1) {
                 // Animation complete
                 container.group.rotation.copy(anim.targetRotation);
+                container.group.position.copy(anim.targetPosition);
                 this.returnAnimations.delete(container);
             } else {
                 // Smooth ease-out interpolation
                 const t = 1 - Math.pow(1 - anim.progress, 3);
+
+                // Interpolate rotation
                 container.group.rotation.x = THREE.MathUtils.lerp(anim.startRotation.x, anim.targetRotation.x, t);
                 container.group.rotation.z = THREE.MathUtils.lerp(anim.startRotation.z, anim.targetRotation.z, t);
+
+                // Interpolate position (return to table)
+                container.group.position.y = THREE.MathUtils.lerp(anim.startPosition.y, anim.targetPosition.y, t);
             }
         }
     }
@@ -1089,25 +1150,52 @@ class PourManager {
     }
 
     findTargetContainer(source) {
-        const sourcePos = source.getPourSpoutWorldPosition();
+        const sourceSpoutPos = source.getPourSpoutWorldPosition();
+
+        let bestTarget = null;
+        let bestScore = -Infinity;
 
         for (const container of this.containers) {
             if (container === source) continue;
 
             const targetPos = container.group.position;
-            const dx = sourcePos.x - targetPos.x;
-            const dz = sourcePos.z - targetPos.z;
+
+            // Calculate horizontal distance from spout to target center
+            const dx = sourceSpoutPos.x - targetPos.x;
+            const dz = sourceSpoutPos.z - targetPos.z;
             const horizontalDist = Math.sqrt(dx * dx + dz * dz);
 
-            // Check if spout is above the target container opening
-            const containerRadius = container instanceof Beaker ? 1.35 : 0.32;
-            const containerTop = targetPos.y + (container instanceof Beaker ? 3.3 : 3.9);
+            // Get target container dimensions
+            let openingRadius, containerTopY;
+            if (container instanceof Beaker) {
+                openingRadius = 1.35; // Beaker has wide opening
+                containerTopY = targetPos.y + 3.3;
+            } else {
+                openingRadius = 0.35; // Erlenmeyer has narrow neck
+                containerTopY = targetPos.y + 3.9;
+            }
 
-            if (horizontalDist < containerRadius * 1.5 && sourcePos.y > containerTop - 1) {
-                return container;
+            // Check if spout is reasonably positioned to pour into target:
+            // 1. Spout must be above the target opening
+            // 2. Spout must be within a reasonable horizontal range (above the opening or nearby)
+            const isAboveTarget = sourceSpoutPos.y > containerTopY - 0.5;
+            const isWithinHorizontalRange = horizontalDist < openingRadius * 2.5;
+
+            if (isAboveTarget && isWithinHorizontalRange) {
+                // Calculate a score based on how well-positioned the pour is
+                // Higher score = better targeting
+                const heightAbove = sourceSpoutPos.y - containerTopY;
+                const horizontalAccuracy = 1 - (horizontalDist / (openingRadius * 2.5));
+                const score = horizontalAccuracy * 10 + Math.min(heightAbove, 2);
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestTarget = container;
+                }
             }
         }
-        return null;
+
+        return bestTarget;
     }
 
     update(deltaTime) {
@@ -1137,7 +1225,17 @@ class PourManager {
 
             // Add liquid to target if there is one
             if (targetContainer) {
-                targetContainer.addVolume(amountPoured * 0.9); // 90% efficiency (some spillage)
+                // Calculate pour efficiency based on accuracy
+                const spoutPos = activePouringContainer.getPourSpoutWorldPosition();
+                const targetPos = targetContainer.group.position;
+                const dx = spoutPos.x - targetPos.x;
+                const dz = spoutPos.z - targetPos.z;
+                const horizontalDist = Math.sqrt(dx * dx + dz * dz);
+
+                const openingRadius = targetContainer instanceof Beaker ? 1.35 : 0.35;
+                const accuracy = Math.max(0.5, 1 - (horizontalDist / openingRadius) * 0.3);
+
+                targetContainer.addVolume(amountPoured * accuracy);
                 this.liquidStream.targetContainer = targetContainer;
             } else {
                 this.liquidStream.targetContainer = null;
@@ -1270,7 +1368,8 @@ animate();
 
 console.log('Liquid Pouring Interaction initialized');
 console.log('Instructions:');
-console.log('- Click and drag containers to move them horizontally');
-console.log('- Drag upward (move mouse up while holding) to tilt and pour');
-console.log('- Position tilted container over another to transfer liquid');
+console.log('- Click + Drag: Move container horizontally, drag UP to lift');
+console.log('- Shift + Drag: Tilt container (up/down) and aim (left/right)');
+console.log('- Lift container above target, then Shift+drag up to tilt and pour');
 console.log('- Right-click drag to orbit camera, scroll to zoom');
+console.log('- Touch: One finger = move/lift, Two fingers = tilt');
