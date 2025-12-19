@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 // Scene setup
 const container = document.getElementById('canvas-container');
@@ -20,7 +21,8 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
+renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 container.appendChild(renderer.domElement);
 
 // Controls
@@ -30,11 +32,71 @@ controls.dampingFactor = 0.05;
 controls.minDistance = 2;
 controls.maxDistance = 20;
 
-// Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+// Create procedural environment map for realistic reflections
+function createEnvironmentMap() {
+    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256);
+    cubeRenderTarget.texture.type = THREE.HalfFloatType;
+
+    // Create a simple gradient environment
+    const envScene = new THREE.Scene();
+
+    // Gradient background sphere
+    const envGeometry = new THREE.SphereGeometry(50, 32, 32);
+    const envMaterial = new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        uniforms: {
+            topColor: { value: new THREE.Color(0x88aacc) },
+            bottomColor: { value: new THREE.Color(0x223344) },
+            offset: { value: 10 },
+            exponent: { value: 0.6 }
+        },
+        vertexShader: `
+            varying vec3 vWorldPosition;
+            void main() {
+                vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                vWorldPosition = worldPosition.xyz;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform vec3 topColor;
+            uniform vec3 bottomColor;
+            uniform float offset;
+            uniform float exponent;
+            varying vec3 vWorldPosition;
+            void main() {
+                float h = normalize(vWorldPosition + offset).y;
+                gl_FragColor = vec4(mix(bottomColor, topColor, max(pow(max(h, 0.0), exponent), 0.0)), 1.0);
+            }
+        `
+    });
+    const envSphere = new THREE.Mesh(envGeometry, envMaterial);
+    envScene.add(envSphere);
+
+    // Add some bright spots for reflections
+    const lightGeometry = new THREE.SphereGeometry(2, 16, 16);
+    const lightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const light1 = new THREE.Mesh(lightGeometry, lightMaterial);
+    light1.position.set(20, 30, 20);
+    envScene.add(light1);
+
+    const light2 = new THREE.Mesh(lightGeometry, lightMaterial.clone());
+    light2.material.color.setHex(0xaaddff);
+    light2.position.set(-25, 15, -10);
+    envScene.add(light2);
+
+    // Render environment to cube map
+    const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRenderTarget);
+    cubeCamera.update(renderer, envScene);
+
+    return cubeRenderTarget.texture;
+}
+
+// Lighting - enhanced for glass rendering
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
-const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+const mainLight = new THREE.DirectionalLight(0xffffff, 1.5);
 mainLight.position.set(5, 10, 7);
 mainLight.castShadow = true;
 mainLight.shadow.mapSize.width = 2048;
@@ -43,25 +105,40 @@ mainLight.shadow.camera.near = 0.5;
 mainLight.shadow.camera.far = 50;
 scene.add(mainLight);
 
-const fillLight = new THREE.DirectionalLight(0x8888ff, 0.3);
+const fillLight = new THREE.DirectionalLight(0x8899bb, 0.4);
 fillLight.position.set(-5, 5, -5);
 scene.add(fillLight);
 
-const rimLight = new THREE.PointLight(0x00d4ff, 0.5, 20);
+const rimLight = new THREE.PointLight(0x00d4ff, 0.6, 20);
 rimLight.position.set(-3, 3, -3);
 scene.add(rimLight);
 
-// Floor/table surface
-const tableGeometry = new THREE.CylinderGeometry(8, 8, 0.2, 64);
+// Backlight for glass rim visibility
+const backLight = new THREE.SpotLight(0xffffff, 0.8);
+backLight.position.set(0, 5, -8);
+backLight.angle = Math.PI / 4;
+scene.add(backLight);
+
+// Floor/table surface - lab bench style
+const tableGeometry = new THREE.CylinderGeometry(8, 8, 0.3, 64);
 const tableMaterial = new THREE.MeshStandardMaterial({
-    color: 0x2a2a4a,
-    metalness: 0.3,
-    roughness: 0.7
+    color: 0x1a1a2e,
+    metalness: 0.1,
+    roughness: 0.4
 });
 const table = new THREE.Mesh(tableGeometry, tableMaterial);
-table.position.y = -2;
+table.position.y = -2.05;
 table.receiveShadow = true;
 scene.add(table);
+
+// Create environment map
+let envMap = null;
+try {
+    envMap = createEnvironmentMap();
+    scene.environment = envMap;
+} catch (e) {
+    console.log('Environment map creation skipped');
+}
 
 // Materials
 const glassMaterial = new THREE.MeshPhysicalMaterial({
@@ -76,6 +153,43 @@ const glassMaterial = new THREE.MeshPhysicalMaterial({
     envMapIntensity: 1.0,
     transparent: true,
     opacity: 0.3,
+    side: THREE.DoubleSide
+});
+
+// Borosilicate glass - slight greenish-blue tint characteristic of lab glass
+const borosilicateGlass = new THREE.MeshPhysicalMaterial({
+    color: 0xe8f5f0,  // Slight green-blue tint
+    metalness: 0.0,
+    roughness: 0.02,
+    transmission: 0.98,
+    thickness: 1.2,
+    ior: 1.474,  // Borosilicate glass IOR
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.05,
+    envMapIntensity: 1.5,
+    transparent: true,
+    opacity: 0.15,
+    side: THREE.DoubleSide,
+    attenuationColor: new THREE.Color(0xddf5ee),
+    attenuationDistance: 2.0,
+    specularIntensity: 1.0,
+    specularColor: new THREE.Color(0xffffff),
+    sheen: 0.1,
+    sheenColor: new THREE.Color(0xaaddcc)
+});
+
+// Ground glass joint material - frosted appearance
+const groundGlassMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xf0f5f3,
+    metalness: 0.0,
+    roughness: 0.6,  // Frosted surface
+    transmission: 0.4,
+    thickness: 0.8,
+    ior: 1.474,
+    clearcoat: 0.3,
+    clearcoatRoughness: 0.8,
+    transparent: true,
+    opacity: 0.85,
     side: THREE.DoubleSide
 });
 
@@ -96,10 +210,33 @@ const liquidMaterial = new THREE.MeshPhysicalMaterial({
     opacity: 0.7
 });
 
+// Enhanced liquid for round bottom flask - aqueous solution
+const aqueousSolutionMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x5ecfff,
+    metalness: 0.0,
+    roughness: 0.0,
+    transmission: 0.85,
+    thickness: 2.0,
+    ior: 1.333,  // Water
+    transparent: true,
+    opacity: 0.6,
+    attenuationColor: new THREE.Color(0x3399cc),
+    attenuationDistance: 1.5,
+    side: THREE.DoubleSide
+});
+
 const plasticCapMaterial = new THREE.MeshStandardMaterial({
     color: 0xeeeeee,
     metalness: 0.0,
     roughness: 0.3
+});
+
+// Cork stopper material
+const corkMaterial = new THREE.MeshStandardMaterial({
+    color: 0xc4a574,
+    metalness: 0.0,
+    roughness: 0.9,
+    bumpScale: 0.02
 });
 
 // Model groups
@@ -111,7 +248,7 @@ const modelInfo = {
     'beaker': { name: 'Laboratory Beaker', description: 'Graduated borosilicate glass beaker with pour spout' },
     'test-tube': { name: 'Microcentrifuge Tube', description: '1.5mL microcentrifuge tube with snap cap' },
     'erlenmeyer': { name: 'Erlenmeyer Flask', description: 'Conical flask for mixing and heating solutions' },
-    'round-bottom': { name: 'Round Bottom Flask', description: 'Spherical flask for rotary evaporation and reactions' },
+    'round-bottom': { name: '500mL Round Bottom Flask', description: 'Borosilicate glass with 24/40 ground glass joint, meniscus effect, and volume markings' },
     'all': { name: 'All Equipment', description: 'Complete laboratory equipment collection' }
 };
 
@@ -393,68 +530,265 @@ function createErlenmeyerFlask() {
 function createRoundBottomFlask() {
     const group = new THREE.Group();
 
-    // Spherical body with neck
-    const sphereRadius = 1.5;
-    const neckRadius = 0.35;
-    const neckHeight = 1.5;
-    const wallThickness = 0.05;
+    // ============================================
+    // DIMENSIONS - Based on real 500mL RB Flask
+    // ============================================
+    const sphereRadius = 1.6;           // Main bulb radius
+    const wallThickness = 0.08;         // Realistic glass thickness
+    const neckOuterRadius = 0.38;       // Neck outer radius
+    const neckInnerRadius = neckOuterRadius - wallThickness;
+    const neckHeight = 1.0;             // Straight neck section
+    const jointHeight = 0.5;            // 24/40 ground glass joint height
+    const jointTopRadius = 0.32;        // Tapered joint top (smaller)
+    const jointBottomRadius = 0.42;     // Tapered joint bottom (larger)
 
-    const flaskPoints = [];
+    // ============================================
+    // OUTER FLASK SURFACE
+    // ============================================
+    const outerPoints = [];
+    const segments = 80;  // High resolution for smooth curves
 
-    // Spherical bottom (270 degrees of sphere)
-    const sphereSegments = 40;
-    for (let i = 0; i <= sphereSegments; i++) {
-        const angle = -Math.PI/2 + (Math.PI * 0.85) * (i / sphereSegments);
-        flaskPoints.push(new THREE.Vector2(
+    // Perfect hemisphere bottom (180 degrees)
+    for (let i = 0; i <= segments; i++) {
+        const angle = -Math.PI/2 + (Math.PI/2) * (i / segments);
+        outerPoints.push(new THREE.Vector2(
             Math.cos(angle) * sphereRadius,
             Math.sin(angle) * sphereRadius + sphereRadius
         ));
     }
 
-    // Transition to neck
-    const transitionSteps = 10;
-    const startRadius = Math.cos(Math.PI * 0.35) * sphereRadius;
-    const startY = Math.sin(Math.PI * 0.35) * sphereRadius + sphereRadius;
+    // Smooth sphere-to-neck transition using cubic Bezier-like curve
+    // This creates the characteristic "shoulder" of real RB flasks
+    const transitionSteps = 30;
+    const sphereTopY = sphereRadius * 2;
+    const sphereTopR = sphereRadius;
+    const neckBottomY = sphereTopY + 0.4;  // Transition zone
 
     for (let i = 1; i <= transitionSteps; i++) {
         const t = i / transitionSteps;
-        const r = startRadius - (startRadius - neckRadius) * t;
-        const y = startY + 0.3 * t;
-        flaskPoints.push(new THREE.Vector2(r, y));
+        // Smooth cubic interpolation for natural curve
+        const smoothT = t * t * (3 - 2 * t);  // Smoothstep
+        const r = sphereTopR - (sphereTopR - neckOuterRadius) * smoothT;
+        const y = sphereTopY + (neckBottomY - sphereTopY) * t;
+        outerPoints.push(new THREE.Vector2(r, y));
     }
 
-    // Neck
-    const neckStart = startY + 0.3;
-    flaskPoints.push(new THREE.Vector2(neckRadius, neckStart + neckHeight));
+    // Straight neck section
+    const neckStartY = neckBottomY;
+    outerPoints.push(new THREE.Vector2(neckOuterRadius, neckStartY + neckHeight));
 
-    // Rim
-    flaskPoints.push(new THREE.Vector2(neckRadius + 0.1, neckStart + neckHeight + 0.02));
-    flaskPoints.push(new THREE.Vector2(neckRadius + 0.1, neckStart + neckHeight + 0.12));
-    flaskPoints.push(new THREE.Vector2(neckRadius - wallThickness, neckStart + neckHeight + 0.12));
+    // 24/40 Ground glass joint - tapered section
+    const jointStartY = neckStartY + neckHeight;
+    outerPoints.push(new THREE.Vector2(jointBottomRadius, jointStartY));
+    outerPoints.push(new THREE.Vector2(jointTopRadius, jointStartY + jointHeight));
 
-    const rbFlaskGeometry = new THREE.LatheGeometry(flaskPoints, 64);
-    const rbFlask = new THREE.Mesh(rbFlaskGeometry, glassMaterial.clone());
-    rbFlask.position.y = -1.9;
-    rbFlask.castShadow = true;
-    rbFlask.receiveShadow = true;
+    // Beaded rim at top
+    const rimRadius = jointTopRadius + 0.06;
+    outerPoints.push(new THREE.Vector2(rimRadius, jointStartY + jointHeight + 0.02));
+    outerPoints.push(new THREE.Vector2(rimRadius, jointStartY + jointHeight + 0.08));
+    outerPoints.push(new THREE.Vector2(jointTopRadius - 0.02, jointStartY + jointHeight + 0.1));
 
-    // Liquid (partial fill in sphere)
-    const liquidPoints4 = [];
-    const liquidLevel = 0.6; // 60% full
+    const outerGeometry = new THREE.LatheGeometry(outerPoints, 96);
+    const outerFlask = new THREE.Mesh(outerGeometry, borosilicateGlass.clone());
+    outerFlask.castShadow = true;
+    outerFlask.receiveShadow = true;
 
-    for (let i = 0; i <= 30; i++) {
-        const angle = -Math.PI/2 + (Math.PI * liquidLevel * 0.5) * (i / 30);
-        const r = Math.cos(angle) * (sphereRadius - wallThickness);
-        const y = Math.sin(angle) * (sphereRadius - wallThickness) + sphereRadius;
-        liquidPoints4.push(new THREE.Vector2(r, y));
+    // ============================================
+    // INNER FLASK SURFACE (for wall thickness)
+    // ============================================
+    const innerPoints = [];
+    const innerRadius = sphereRadius - wallThickness;
+
+    // Inner hemisphere
+    for (let i = 0; i <= segments; i++) {
+        const angle = -Math.PI/2 + (Math.PI/2) * (i / segments);
+        innerPoints.push(new THREE.Vector2(
+            Math.cos(angle) * innerRadius,
+            Math.sin(angle) * innerRadius + sphereRadius
+        ));
     }
-    liquidPoints4.push(new THREE.Vector2(0, liquidPoints4[liquidPoints4.length-1].y));
 
-    const liquidGeometry4 = new THREE.LatheGeometry(liquidPoints4, 64);
-    const rbLiquid = new THREE.Mesh(liquidGeometry4, liquidMaterial.clone());
-    rbLiquid.position.y = -1.85;
+    // Inner transition
+    for (let i = 1; i <= transitionSteps; i++) {
+        const t = i / transitionSteps;
+        const smoothT = t * t * (3 - 2 * t);
+        const r = innerRadius - (innerRadius - neckInnerRadius) * smoothT;
+        const y = sphereTopY + (neckBottomY - sphereTopY) * t;
+        innerPoints.push(new THREE.Vector2(r, y));
+    }
 
-    group.add(rbFlask, rbLiquid);
+    // Inner neck
+    innerPoints.push(new THREE.Vector2(neckInnerRadius, neckStartY + neckHeight));
+    innerPoints.push(new THREE.Vector2(jointBottomRadius - wallThickness, jointStartY));
+    innerPoints.push(new THREE.Vector2(jointTopRadius - wallThickness * 0.8, jointStartY + jointHeight));
+
+    const innerGeometry = new THREE.LatheGeometry(innerPoints, 96);
+    const innerMaterial = borosilicateGlass.clone();
+    innerMaterial.side = THREE.BackSide;
+    const innerFlask = new THREE.Mesh(innerGeometry, innerMaterial);
+
+    // ============================================
+    // GROUND GLASS JOINT OVERLAY
+    // ============================================
+    const jointPoints = [];
+    jointPoints.push(new THREE.Vector2(jointBottomRadius - 0.001, jointStartY));
+    jointPoints.push(new THREE.Vector2(jointTopRadius - 0.001, jointStartY + jointHeight));
+    jointPoints.push(new THREE.Vector2(jointTopRadius - wallThickness + 0.001, jointStartY + jointHeight));
+    jointPoints.push(new THREE.Vector2(jointBottomRadius - wallThickness + 0.001, jointStartY));
+
+    const jointGeometry = new THREE.LatheGeometry(jointPoints, 64);
+    const groundJoint = new THREE.Mesh(jointGeometry, groundGlassMaterial.clone());
+
+    // Add subtle texture lines to ground glass joint
+    const jointLinesMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.15
+    });
+
+    for (let i = 0; i < 12; i++) {
+        const lineY = jointStartY + (jointHeight * i / 12);
+        const lineR = jointBottomRadius - (jointBottomRadius - jointTopRadius) * (i / 12);
+        const lineGeometry = new THREE.TorusGeometry(lineR, 0.003, 4, 48);
+        const line = new THREE.Mesh(lineGeometry, jointLinesMaterial);
+        line.rotation.x = Math.PI / 2;
+        line.position.y = lineY;
+        group.add(line);
+    }
+
+    // ============================================
+    // LIQUID WITH MENISCUS EFFECT
+    // ============================================
+    const liquidLevel = 0.55;  // 55% full
+    const liquidPoints = [];
+    const liquidMaxY = sphereRadius + sphereRadius * liquidLevel * 0.7;
+
+    // Liquid follows inner sphere contour
+    for (let i = 0; i <= 50; i++) {
+        const angle = -Math.PI/2 + (Math.PI * 0.42) * (i / 50);
+        const r = Math.cos(angle) * (innerRadius - 0.02);
+        const y = Math.sin(angle) * (innerRadius - 0.02) + sphereRadius;
+        if (y <= liquidMaxY) {
+            liquidPoints.push(new THREE.Vector2(r, y));
+        }
+    }
+
+    // Find the radius at liquid surface level
+    const surfaceAngle = Math.asin((liquidMaxY - sphereRadius) / (innerRadius - 0.02));
+    const surfaceRadius = Math.cos(surfaceAngle) * (innerRadius - 0.02);
+
+    // Meniscus curve - liquid curves up at the glass wall
+    const meniscusSteps = 15;
+    const meniscusHeight = 0.08;  // Height of meniscus climb
+
+    for (let i = 0; i <= meniscusSteps; i++) {
+        const t = i / meniscusSteps;
+        // Meniscus profile: curves up at edge, flat in center
+        const meniscusCurve = Math.pow(t, 2.5);  // Sharp rise at edge
+        const r = surfaceRadius * (1 - t);
+        const y = liquidMaxY + meniscusHeight * meniscusCurve;
+        liquidPoints.push(new THREE.Vector2(r, y));
+    }
+
+    const liquidGeometry = new THREE.LatheGeometry(liquidPoints, 64);
+    const liquid = new THREE.Mesh(liquidGeometry, aqueousSolutionMaterial.clone());
+
+    // ============================================
+    // VOLUME MARKINGS
+    // ============================================
+    const markMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.5
+    });
+
+    // Add volume marks at key positions
+    const volumeMarks = [
+        { y: sphereRadius * 0.7, label: '100' },
+        { y: sphereRadius * 1.2, label: '250' },
+        { y: sphereRadius * 1.6, label: '400' },
+        { y: sphereRadius * 1.9, label: '500' }
+    ];
+
+    volumeMarks.forEach(mark => {
+        // Calculate radius at this height for the sphere
+        const relY = mark.y - sphereRadius;
+        const markRadius = Math.sqrt(Math.max(0, sphereRadius * sphereRadius - relY * relY));
+
+        if (markRadius > 0.2) {
+            // Main mark line
+            const markWidth = 0.3;
+            const markGeometry = new THREE.TorusGeometry(markRadius + 0.01, 0.008, 4, 32, markWidth);
+            const markMesh = new THREE.Mesh(markGeometry, markMaterial);
+            markMesh.rotation.x = Math.PI / 2;
+            markMesh.rotation.z = -0.5;  // Position marks on one side
+            markMesh.position.y = mark.y;
+            group.add(markMesh);
+
+            // Small tick marks
+            const tickGeometry = new THREE.BoxGeometry(0.15, 0.01, 0.01);
+            const tick = new THREE.Mesh(tickGeometry, markMaterial);
+            tick.position.set(markRadius + 0.08, mark.y, 0);
+            group.add(tick);
+        }
+    });
+
+    // ============================================
+    // GLASS REFLECTIONS / HIGHLIGHTS
+    // ============================================
+    // Vertical highlight line (simulates window reflection)
+    const highlightCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(-1.2, 0.5, 0.5),
+        new THREE.Vector3(-1.35, 1.5, 0.4),
+        new THREE.Vector3(-1.1, 2.5, 0.3),
+        new THREE.Vector3(-0.3, 3.5, 0.2)
+    ]);
+    const highlightGeometry = new THREE.TubeGeometry(highlightCurve, 20, 0.015, 8, false);
+    const highlightMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.35
+    });
+    const highlight = new THREE.Mesh(highlightGeometry, highlightMaterial);
+    group.add(highlight);
+
+    // Secondary smaller highlight
+    const highlight2Curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0.9, 0.8, -0.8),
+        new THREE.Vector3(1.0, 1.8, -0.6)
+    ]);
+    const highlight2Geometry = new THREE.TubeGeometry(highlight2Curve, 10, 0.01, 6, false);
+    const highlight2 = new THREE.Mesh(highlight2Geometry, highlightMaterial);
+    highlight2.material = highlightMaterial.clone();
+    highlight2.material.opacity = 0.2;
+    group.add(highlight2);
+
+    // ============================================
+    // CAUSTIC HINT (light pattern on table)
+    // ============================================
+    const causticGeometry = new THREE.RingGeometry(0.8, 1.5, 32);
+    const causticMaterial = new THREE.MeshBasicMaterial({
+        color: 0x88ccff,
+        transparent: true,
+        opacity: 0.08,
+        side: THREE.DoubleSide
+    });
+    const caustic = new THREE.Mesh(causticGeometry, causticMaterial);
+    caustic.rotation.x = -Math.PI / 2;
+    caustic.position.y = -sphereRadius + 0.01;
+    group.add(caustic);
+
+    // ============================================
+    // ASSEMBLE AND POSITION
+    // ============================================
+    group.add(outerFlask);
+    group.add(innerFlask);
+    group.add(groundJoint);
+    group.add(liquid);
+
+    // Center the flask
+    group.position.y = -1.6;
+
     return group;
 }
 
