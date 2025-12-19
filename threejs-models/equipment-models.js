@@ -259,50 +259,68 @@ const modelInfo = {
 function createStirBar() {
     const group = new THREE.Group();
 
-    // Main body - capsule shape using lathe
-    const capsulePoints = [];
-    const segments = 32;
-    const length = 2.0;
-    const radius = 0.25;
+    // ============================================
+    // MAGNETIC STIR BAR - Capsule/pill shape
+    // PTFE-coated with embedded magnet
+    // ============================================
+    const length = 1.8;      // Total length
+    const radius = 0.22;     // Radius of the bar
+    const segments = 24;
 
-    // Create capsule profile
-    for (let i = 0; i <= segments; i++) {
-        const angle = (Math.PI / 2) * (i / segments);
-        capsulePoints.push(new THREE.Vector2(
-            Math.cos(angle) * radius,
-            -length/2 + Math.sin(angle) * radius
-        ));
+    // Create capsule profile for lathe geometry
+    // Profile goes: top center -> top hemisphere -> cylinder side -> bottom hemisphere -> bottom center
+    const capsulePoints = [];
+
+    // Start at top center
+    capsulePoints.push(new THREE.Vector2(0.001, length / 2));
+
+    // Top hemisphere (quarter circle from top to side)
+    for (let i = 1; i <= segments; i++) {
+        const t = i / segments;
+        const angle = (Math.PI / 2) * t;  // 0 to 90 degrees
+        const r = Math.sin(angle) * radius;
+        const y = (length / 2 - radius) + Math.cos(angle) * radius;
+        capsulePoints.push(new THREE.Vector2(r, y));
     }
-    for (let i = 0; i <= segments; i++) {
-        const angle = (Math.PI / 2) + (Math.PI / 2) * (i / segments);
-        capsulePoints.push(new THREE.Vector2(
-            Math.cos(angle) * radius,
-            length/2 - radius + Math.sin(angle) * radius + radius
-        ));
+
+    // Cylinder side (straight section) - just need the bottom point since top is from hemisphere
+    capsulePoints.push(new THREE.Vector2(radius, -(length / 2 - radius)));
+
+    // Bottom hemisphere (quarter circle from side to bottom)
+    for (let i = 1; i <= segments; i++) {
+        const t = i / segments;
+        const angle = (Math.PI / 2) * t;  // 0 to 90 degrees
+        const r = Math.cos(angle) * radius;
+        const y = -(length / 2 - radius) - Math.sin(angle) * radius;
+        capsulePoints.push(new THREE.Vector2(r, y));
     }
+
+    // End at bottom center
+    capsulePoints.push(new THREE.Vector2(0.001, -length / 2));
 
     const capsuleGeometry = new THREE.LatheGeometry(capsulePoints, 32);
     const stirBar = new THREE.Mesh(capsuleGeometry, ptfeMaterial.clone());
-    stirBar.rotation.z = Math.PI / 2;
     stirBar.castShadow = true;
-    stirBar.position.y = -1.75;
+    stirBar.receiveShadow = true;
 
-    // Add subtle highlight ring
-    const ringGeometry = new THREE.TorusGeometry(0.28, 0.02, 8, 32);
-    const highlightMaterial = new THREE.MeshStandardMaterial({
-        color: 0x606060,
-        metalness: 0.3,
-        roughness: 0.2
+    // Position on table (lying flat - rotate to horizontal)
+    stirBar.rotation.x = Math.PI / 2;
+    stirBar.position.y = -1.88 + radius;
+
+    // Add subtle center ridge (characteristic of many stir bars)
+    const ridgeGeometry = new THREE.TorusGeometry(radius + 0.01, 0.015, 8, 32);
+    const ridgeMaterial = new THREE.MeshStandardMaterial({
+        color: 0x505050,
+        metalness: 0.2,
+        roughness: 0.3
     });
-    const ring1 = new THREE.Mesh(ringGeometry, highlightMaterial);
-    ring1.rotation.y = Math.PI / 2;
-    ring1.position.x = -0.6;
-    ring1.position.y = -1.75;
+    const ridge = new THREE.Mesh(ridgeGeometry, ridgeMaterial);
+    ridge.rotation.x = Math.PI / 2;
+    ridge.position.y = -1.88 + radius;
 
-    const ring2 = ring1.clone();
-    ring2.position.x = 0.6;
+    group.add(stirBar);
+    group.add(ridge);
 
-    group.add(stirBar, ring1, ring2);
     return group;
 }
 
@@ -517,7 +535,7 @@ function createErlenmeyerFlask() {
     const wallThickness = 0.05;
     const bottomThickness = 0.07;
 
-    // Outer profile
+    // Outer profile - using a single continuous curve
     const outerPoints = [];
 
     // Flat bottom
@@ -525,28 +543,24 @@ function createErlenmeyerFlask() {
     outerPoints.push(new THREE.Vector2(bottomRadius - 0.2, 0));
     outerPoints.push(new THREE.Vector2(bottomRadius - 0.08, 0.02));
     outerPoints.push(new THREE.Vector2(bottomRadius, 0.08));
-
-    // Straight conical sides - but stop earlier to allow smooth transition
-    const coneEndHeight = bodyHeight * 0.65;  // Cone goes up to 65% of body height
-    const coneEndRadius = bottomRadius - (bottomRadius - neckRadius) * (coneEndHeight / bodyHeight);
-
     outerPoints.push(new THREE.Vector2(bottomRadius, 0.12));
-    outerPoints.push(new THREE.Vector2(coneEndRadius, coneEndHeight));
 
-    // Smooth shoulder curve using cubic easing
-    // This creates a gradual S-curve from cone to neck
-    const shoulderSteps = 25;
-    const transitionHeight = bodyHeight - coneEndHeight;
+    // Single continuous curve from bottom to neck using power function
+    // This creates the classic Erlenmeyer profile - steep at bottom, curving to vertical at neck
+    const curveSteps = 40;
+    const curveStartY = 0.12;
+    const curveEndY = bodyHeight;
+    const curveHeight = curveEndY - curveStartY;
 
-    for (let i = 1; i <= shoulderSteps; i++) {
-        const t = i / shoulderSteps;
-        // Use smoothstep for gradual transition
-        const smoothT = t * t * (3 - 2 * t);
+    for (let i = 1; i <= curveSteps; i++) {
+        const t = i / curveSteps;
+        const y = curveStartY + curveHeight * t;
 
-        // Radius transitions from coneEndRadius to neckRadius
-        const r = coneEndRadius - (coneEndRadius - neckRadius) * smoothT;
-        // Height goes from coneEndHeight to bodyHeight
-        const y = coneEndHeight + transitionHeight * t;
+        // Use power curve: starts following cone slope, curves smoothly to vertical
+        // r = neckRadius + (bottomRadius - neckRadius) * (1 - t)^power
+        // Higher power = more cone-like at bottom, sharper curve near top
+        const power = 1.8;
+        const r = neckRadius + (bottomRadius - neckRadius) * Math.pow(1 - t, power);
 
         outerPoints.push(new THREE.Vector2(r, y));
     }
@@ -569,19 +583,20 @@ function createErlenmeyerFlask() {
     const innerPoints = [];
     const innerBottomR = bottomRadius - wallThickness;
     const innerNeckR = neckRadius - wallThickness;
-    const innerConeEndR = innerBottomR - (innerBottomR - innerNeckR) * (coneEndHeight / bodyHeight);
 
     innerPoints.push(new THREE.Vector2(0.001, bottomThickness));
     innerPoints.push(new THREE.Vector2(innerBottomR - 0.15, bottomThickness));
     innerPoints.push(new THREE.Vector2(innerBottomR, bottomThickness + 0.05));
-    innerPoints.push(new THREE.Vector2(innerConeEndR, coneEndHeight));
 
-    // Inner shoulder curve
-    for (let i = 1; i <= shoulderSteps; i++) {
-        const t = i / shoulderSteps;
-        const smoothT = t * t * (3 - 2 * t);
-        const r = innerConeEndR - (innerConeEndR - innerNeckR) * smoothT;
-        const y = coneEndHeight + transitionHeight * t;
+    // Inner curve
+    const innerCurveStartY = bottomThickness + 0.05;
+    const innerCurveHeight = bodyHeight - innerCurveStartY;
+
+    for (let i = 1; i <= curveSteps; i++) {
+        const t = i / curveSteps;
+        const y = innerCurveStartY + innerCurveHeight * t;
+        const power = 1.8;
+        const r = innerNeckR + (innerBottomR - innerNeckR) * Math.pow(1 - t, power);
         innerPoints.push(new THREE.Vector2(r, y));
     }
 
@@ -592,32 +607,45 @@ function createErlenmeyerFlask() {
     innerMat.side = THREE.BackSide;
     const flaskInner = new THREE.Mesh(innerGeometry, innerMat);
 
-    // Liquid - follows the conical shape
+    // Liquid - follows the power curve profile
     const liquidHeight = 1.4;
     const liquidPoints = [];
-
-    // Calculate liquid radius at different heights (linear interpolation for cone)
-    const liquidBottomR = bottomRadius - wallThickness - 0.03;
-    const coneSlope = (neckRadius - bottomRadius) / bodyHeight;
+    const liquidBottomR = innerBottomR - 0.02;
+    const liquidNeckR = innerNeckR - 0.02;
+    const power = 1.8;  // Same as flask profile
 
     liquidPoints.push(new THREE.Vector2(0.001, bottomThickness + 0.01));
     liquidPoints.push(new THREE.Vector2(liquidBottomR, bottomThickness + 0.02));
 
-    const liquidTopR = liquidBottomR + coneSlope * liquidHeight;
-    liquidPoints.push(new THREE.Vector2(liquidTopR, liquidHeight + bottomThickness));
+    // Follow the power curve for liquid sides
+    const liquidStartY = bottomThickness + 0.02;
+    const liquidEndY = liquidHeight + bottomThickness;
+
+    for (let i = 1; i <= 15; i++) {
+        const t = i / 15;
+        const y = liquidStartY + (liquidEndY - liquidStartY) * t;
+        // Calculate t relative to full flask height for the power curve
+        const flaskT = (y - curveStartY) / curveHeight;
+        const r = liquidNeckR + (liquidBottomR - liquidNeckR) * Math.pow(1 - Math.min(flaskT, 1), power);
+        liquidPoints.push(new THREE.Vector2(r, y));
+    }
+
+    // Get the radius at liquid surface
+    const liquidSurfaceT = (liquidEndY - curveStartY) / curveHeight;
+    const liquidTopR = liquidNeckR + (liquidBottomR - liquidNeckR) * Math.pow(1 - Math.min(liquidSurfaceT, 1), power);
 
     // Meniscus
     for (let i = 0; i <= 10; i++) {
         const t = i / 10;
         const r = liquidTopR * (1 - t);
         const meniscus = 0.04 * Math.pow(t, 2.5);
-        liquidPoints.push(new THREE.Vector2(r, liquidHeight + bottomThickness + meniscus));
+        liquidPoints.push(new THREE.Vector2(r, liquidEndY + meniscus));
     }
 
     const liquidGeometry = new THREE.LatheGeometry(liquidPoints, 48);
     const liquid = new THREE.Mesh(liquidGeometry, aqueousSolutionMaterial.clone());
 
-    // Volume graduations on the side
+    // Volume graduations on the side - using power curve
     const markMaterial = new THREE.MeshBasicMaterial({
         color: 0xffffff,
         transparent: true,
@@ -625,7 +653,8 @@ function createErlenmeyerFlask() {
     });
 
     [0.8, 1.4, 2.0, 2.5].forEach(y => {
-        const radiusAtY = bottomRadius + coneSlope * y;
+        const markT = (y - curveStartY) / curveHeight;
+        const radiusAtY = neckRadius + (bottomRadius - neckRadius) * Math.pow(1 - Math.min(markT, 1), power);
         if (radiusAtY > neckRadius + 0.1) {
             const markGeometry = new THREE.TorusGeometry(radiusAtY + 0.01, 0.006, 4, 16, 0.15);
             const mark = new THREE.Mesh(markGeometry, markMaterial);
